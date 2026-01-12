@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Pesanan - CampHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .gradient-accent {
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        }
+        
+        .gradient-primary {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .badge-pending {
+            background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
+            color: #854d0e;
+        }
+
+        .badge-confirmed {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #166534;
+        }
+
+        .badge-cancelled {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(245, 158, 11, 0.3);
+            border-radius: 50%;
+            border-top-color: #f59e0b;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideDown {
+            from { 
+                opacity: 0;
+                transform: translateY(-20px);
+                max-height: 0;
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+                max-height: 500px;
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        .animate-slide-down {
+            animation: slideDown 0.3s ease-out forwards;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #f59e0b 0%, #f97316 100%);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+        }
+        
+        /* Ensure body is properly structured */
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Mobile menu transitions */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .mobile-menu.open {
+            max-height: 500px;
+        }
+        
+        /* Responsive fixes */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 80px; /* Space for fixed navbar */
+            }
+            
+            main {
+                padding-top: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            .glass-dark {
+                padding: 1.5rem !important;
+            }
+        }
+        
+        /* Smooth transitions */
+        a, button {
+            transition: all 0.3s ease;
+        }
+        
+        /* Focus styles for accessibility */
+        a:focus, button:focus {
+            outline: 2px solid #f59e0b;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="gradient-primary min-h-screen text-slate-100">
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-morphism shadow-lg" id="navbar">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 md:h-20">
+                <!-- Logo -->
+                <div class="flex items-center gap-3">
+                    <a href="index.html" class="flex items-center gap-3 no-underline">
+                        <div class="text-3xl md:text-4xl text-orange-500">
+                            <i class="bi bi-mountain"></i>
+                        </div>
+                        <div class="text-xl md:text-2xl lg:text-3xl font-bold text-gradient">CampHub</div>
+                    </a>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
+                    <a href="index.html" class="text-slate-700 hover:text-orange-500 font-medium text-sm lg:text-base">
+                        <i class="bi bi-house-door mr-1"></i> Home
+                    </a>
+                    <a href="index.html#paket" class="text-slate-700 hover:text-orange-500 font-medium text-sm lg:text-base">
+                        <i class="bi bi-box-seam mr-1"></i> Paket
+                    </a>
+                    <a href="index.html#testimoni" class="text-slate-700 hover:text-orange-500 font-medium text-sm lg:text-base">
+                        <i class="bi bi-chat-quote mr-1"></i> Testimoni
+                    </a>
+                    <a href="status-pesanan.html" class="text-orange-500 font-semibold text-sm lg:text-base flex items-center gap-1 border-b-2 border-orange-500 pb-1">
+                        <i class="bi bi-clock-history"></i> Status Pesanan
+                    </a>
+                    <a href="login.html" class="gradient-accent text-white px-5 py-2 rounded-full hover:shadow-lg hover:scale-105 font-semibold text-sm lg:text-base">
+                        <i class="bi bi-box-arrow-in-right mr-1"></i> Login
+                    </a>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button id="menuBtn" class="md:hidden text-2xl text-orange-500 focus:outline-none" aria-label="Toggle menu">
+                    <i class="bi bi-list" id="menuIcon"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="mobile-menu md:hidden">
+                <div class="py-4 space-y-3">
+                    <a href="index.html" class="block text-slate-700 hover:text-orange-500 font-medium py-2 px-4 rounded-lg hover:bg-orange-50 transition flex items-center gap-2">
+                        <i class="bi bi-house-door"></i> Home
+                    </a>
+                    <a href="index.html#paket" class="block text-slate-700 hover:text-orange-500 font-medium py-2 px-4 rounded-lg hover:bg-orange-50 transition flex items-center gap-2">
+                        <i class="bi bi-box-seam"></i> Paket
+                    </a>
+                    <a href="index.html#testimoni" class="block text-slate-700 hover:text-orange-500 font-medium py-2 px-4 rounded-lg hover:bg-orange-50 transition flex items-center gap-2">
+                        <i class="bi bi-chat-quote"></i> Testimoni
+                    </a>
+                    <a href="status-pesanan.html" class="block bg-orange-50 text-orange-600 font-semibold py-2 px-4 rounded-lg transition flex items-center gap-2">
+                        <i class="bi bi-clock-history"></i> Status Pesanan
+                    </a>
+                    <a href="login.html" class="block gradient-accent text-white py-2.5 px-4 rounded-lg text-center font-semibold mt-2 transition hover:shadow-lg flex items-center justify-center gap-2">
+                        <i class="bi bi-box-arrow-in-right"></i> Login Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-12 pt-24 md:pt-28">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-12 animate-fade-in">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full gradient-accent mb-6 shadow-lg">
+                    <i class="bi bi-clock-history text-3xl text-white"></i>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                    Status <span class="text-gradient">Pesanan</span>
+                </h1>
+                <p class="text-slate-300 text-lg max-w-2xl mx-auto">
+                    Cek status dan detail pesanan camping Anda dengan mudah
+                </p>
+            </div>
+
+            <!-- Search Form -->
+            <div class="glass-dark rounded-2xl p-6 md:p-8 mb-8 animate-fade-in" style="animation-delay: 0.1s">
+                <h2 class="text-2xl font-bold mb-6 text-orange-400 flex items-center gap-2">
+                    <i class="bi bi-search"></i> Cari Pesanan Anda
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block mb-2 text-slate-300 text-sm md:text-base">
+                            <i class="bi bi-envelope mr-1"></i> Email yang digunakan saat booking
+                        </label>
+                        <input type="email" id="searchEmail" placeholder="contoh@gmail.com" 
+                               class="w-full px-4 py-3 rounded-xl bg-slate-800/80 border-2 border-slate-700 focus:border-orange-500 focus:outline-none transition text-slate-100 placeholder-slate-400">
+                        <p class="text-slate-400 text-xs mt-1">Masukkan email yang Anda gunakan saat booking</p>
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-slate-300 text-sm md:text-base">
+                            <i class="bi bi-tag mr-1"></i> ID Pesanan atau Nama (opsional)
+                        </label>
+                        <input type="text" id="searchId" placeholder="ID pesanan atau nama Anda" 
+                               class="w-full px-4 py-3 rounded-xl bg-slate-800/80 border-2 border-slate-700 focus:border-orange-500 focus:outline-none transition text-slate-100 placeholder-slate-400">
+                    </div>
+                </div>
+                <button onclick="searchBookings()" class="gradient-accent text-white px-8 py-3.5 rounded-xl font-semibold hover:scale-105 transition flex items-center justify-center gap-2 w-full md:w-auto">
+                    <i class="bi bi-search"></i> Cari Pesanan
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="hidden text-center py-12">
+                <div class="loading-spinner mx-auto mb-4"></div>
+                <p class="text-slate-300">Memuat data pesanan...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden text-center py-12">
+                <div class="text-5xl mb-4 text-slate-400">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-2 text-slate-300">Belum Ada Pesanan</h3>
+                <p class="text-slate-400 mb-6 max-w-md mx-auto">Booking paket camping Anda terlebih dahulu untuk melihat status pesanan</p>
+                <a href="index.html#paket" class="gradient-accent text-white px-8 py-3 rounded-xl font-semibold inline-block hover:scale-105 transition flex items-center gap-2">
+                    <i class="bi bi-box-seam"></i> Lihat Paket
+                </a>
+            </div>
+
+            <!-- Booking List -->
+            <div id="bookingList" class="space-y-6"></div>
+
+            <!-- Booking Detail Modal -->
+            <div id="bookingDetailModal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
+                <div class="glass-morphism rounded-3xl p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-fade-in">
+                    <div class="flex justify-between items-center mb-6 sticky top-0 bg-white py-2">
+                        <h3 class="text-2xl md:text-3xl font-bold text-gradient flex items-center gap-2">
+                            <i class="bi bi-info-circle"></i> Detail Pesanan
+                        </h3>
+                        <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600 text-3xl focus:outline-none">&times;</button>
+                    </div>
+                    <div id="detailContent" class="space-y-6">
+                        <!-- Detail akan dimuat dari JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Section -->
+            <div class="glass-dark rounded-2xl p-6 md:p-8 mt-12 animate-fade-in" style="animation-delay: 0.2s">
+                <h3 class="text-xl font-bold mb-4 text-orange-400 flex items-center gap-2">
+                    <i class="bi bi-question-circle"></i> Butuh Bantuan?
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 bg-slate-800/50 rounded-xl">
+                        <i class="bi bi-telephone text-2xl text-orange-400 mb-2"></i>
+                        <h4 class="font-semibold mb-1">Telepon</h4>
+                        <p class="text-slate-400 text-sm">+62 812-3456-7890</p>
+                    </div>
+                    <div class="p-4 bg-slate-800/50 rounded-xl">
+                        <i class="bi bi-envelope text-2xl text-orange-400 mb-2"></i>
+                        <h4 class="font-semibold mb-1">Email</h4>
+                        <p class="text-slate-400 text-sm">info@camphub.com</p>
+                    </div>
+                    <div class="p-4 bg-slate-800/50 rounded-xl">
+                        <i class="bi bi-clock text-2xl text-orange-400 mb-2"></i>
+                        <h4 class="font-semibold mb-1">Jam Operasional</h4>
+                        <p class="text-slate-400 text-sm">Senin - Minggu: 24/7</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="gradient-primary border-t border-slate-700 py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="text-center text-slate-400">
+                <div class="flex items-center justify-center gap-2 mb-3">
+                    <i class="bi bi-mountain text-orange-400"></i>
+                    <span class="text-gradient font-bold text-lg">CampHub</span>
+                </div>
+                <p class="flex items-center justify-center gap-2 text-sm">
+                    <i class="bi bi-c-circle"></i> 2026 CampHub. Sistem Manajemen Camping.
+                </p>
+                <p class="text-sm mt-2 max-w-md mx-auto">Hubungi kami di info@camphub.com atau +62 812-3456-7890 untuk bantuan lebih lanjut</p>
+                <div class="flex items-center justify-center gap-4 mt-4 text-sm">
+                    <a href="#" class="hover:text-orange-400 transition flex items-center gap-1">
+                        <i class="bi bi-shield-check"></i> Privacy
+                    </a>
+                    <span class="text-slate-500">•</span>
+                    <a href="#" class="hover:text-orange-400 transition flex items-center gap-1">
+                        <i class="bi bi-file-text"></i> Terms
+                    </a>
+                    <span class="text-slate-500">•</span>
+                    <a href="#" class="hover:text-orange-400 transition flex items-center gap-1">
+                        <i class="bi bi-question-circle"></i> FAQ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuIcon = document.getElementById('menuIcon');
+
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+            menuIcon.className = mobileMenu.classList.contains('open') 
+                ? 'bi bi-x' 
+                : 'bi bi-list';
+            
+            // Toggle aria-expanded for accessibility
+            menuBtn.setAttribute('aria-expanded', 
+                mobileMenu.classList.contains('open')
+            );
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!menuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.remove('open');
+                menuIcon.className = 'bi bi-list';
+                menuBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Close mobile menu when clicking a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+                menuIcon.className = 'bi bi-list';
+                menuBtn.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        // Handle escape key for mobile menu
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
+                mobileMenu.classList.remove('open');
+                menuIcon.className = 'bi bi-list';
+                menuBtn.setAttribute('aria-expanded', 'false');
+                menuBtn.focus();
+            }
+        });
+
+        // Load bookings from localStorage
+        function loadBookings() {
+            const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+            const container = document.getElementById('bookingList');
+            const emptyState = document.getElementById('emptyState');
+            const loadingState = document.getElementById('loadingState');
+
+            loadingState.classList.add('hidden');
+            
+            if (bookings.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            
+            // Sort by date (newest first)
+            bookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            container.innerHTML = bookings.map(booking => {
+                const pakets = JSON.parse(localStorage.getItem('pakets')) || [];
+                const paket = pakets.find(p => p.id == booking.paketId) || { nama: 'Paket Tidak Ditemukan', harga: 0 };
+                const totalHarga = paket.harga * booking.jumlahHari;
+                const tanggal = new Date(booking.createdAt).toLocaleDateString('id-ID', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const statusClass = booking.status === 'confirmed' ? 'badge-confirmed' : 
+                                  booking.status === 'cancelled' ? 'badge-cancelled' : 'badge-pending';
+                const statusText = booking.status === 'confirmed' ? 'Terkonfirmasi' : 
+                                 booking.status === 'cancelled' ? 'Dibatalkan' : 'Menunggu';
+
+                return `
+                    <div class="glass-dark rounded-2xl p-6 animate-fade-in hover:shadow-xl transition-shadow duration-300">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="flex-1">
+                                <div class="flex flex-wrap items-center gap-3 mb-3">
+                                    <span class="${statusClass} px-4 py-2 rounded-lg font-semibold text-sm">
+                                        <i class="bi ${booking.status === 'confirmed' ? 'bi-check-circle' : booking.status === 'cancelled' ? 'bi-x-circle' : 'bi-clock'} mr-1"></i> ${statusText}
+                                    </span>
+                                    <span class="text-slate-400 text-sm bg-slate-800/50 px-3 py-1 rounded-lg">
+                                        <i class="bi bi-tag mr-1"></i> #${booking.id.toString().slice(-6)}
+                                    </span>
+                                </div>
+                                <h3 class="text-xl font-bold text-orange-400 mb-3">${booking.nama}</h3>
+                                <div class="space-y-2 text-slate-300">
+                                    <p class="flex items-center gap-2">
+                                        <i class="bi bi-envelope text-slate-400"></i>
+                                        <span>${booking.email}</span>
+                                    </p>
+                                    <p class="flex items-center gap-2">
+                                        <i class="bi bi-calendar-event text-slate-400"></i>
+                                        <span>Check-in: ${new Date(booking.checkin).toLocaleDateString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                                    </p>
+                                    <p class="flex items-center gap-2">
+                                        <i class="bi bi-box-seam text-slate-400"></i>
+                                        <span>${paket.nama}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-center md:text-right">
+                                <div class="text-2xl font-bold text-gradient mb-2">Rp ${totalHarga.toLocaleString('id-ID')}</div>
+                                <p class="text-slate-400 text-sm mb-4">${booking.jumlahHari} hari × ${booking.jumlahOrang} orang</p>
+                                <button onclick="showBookingDetail(${booking.id})" class="bg-slate-700 hover:bg-slate-600 text-white px-6 py-2.5 rounded-lg font-semibold transition hover:scale-105 flex items-center gap-2 mx-auto md:mx-0">
+                                    <i class="bi bi-eye"></i> Lihat Detail
+                                </button>
+                            </div>
+                        </div>
+                        <div class="border-t border-slate-700 mt-4 pt-4 text-sm text-slate-400 flex items-center gap-2">
+                            <i class="bi bi-clock"></i> Dipesan pada ${tanggal}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Search bookings
+        function searchBookings() {
+            const email = document.getElementById('searchEmail').value.trim();
+            const searchId = document.getElementById('searchId').value.trim().toLowerCase();
+            
+            const loadingState = document.getElementById('loadingState');
+            const bookingList = document.getElementById('bookingList');
+            const emptyState = document.getElementById('emptyState');
+
+            if (!email) {
+                // Show error message with animation
+                const emailInput = document.getElementById('searchEmail');
+                emailInput.focus();
+                emailInput.classList.add('border-red-500');
+                
+                setTimeout(() => {
+                    emailInput.classList.remove('border-red-500');
+                }, 2000);
+                
+                return;
+            }
+
+            loadingState.classList.remove('hidden');
+            bookingList.innerHTML = '';
+            emptyState.classList.add('hidden');
+
+            setTimeout(() => {
+                const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+                const filteredBookings = bookings.filter(booking => {
+                    const emailMatch = booking.email.toLowerCase().includes(email.toLowerCase());
+                    const idMatch = searchId ? 
+                        booking.id.toString().includes(searchId) || 
+                        booking.nama.toLowerCase().includes(searchId) : true;
+                    
+                    return emailMatch && idMatch;
+                });
+
+                loadingState.classList.add('hidden');
+
+                if (filteredBookings.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    emptyState.innerHTML = `
+                        <div class="text-5xl mb-4 text-slate-400">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2 text-slate-300">Pesanan Tidak Ditemukan</h3>
+                        <p class="text-slate-400 mb-6 max-w-md mx-auto">Tidak ditemukan pesanan dengan email "${email}"</p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <a href="index.html#paket" class="gradient-accent text-white px-8 py-3 rounded-xl font-semibold inline-block hover:scale-105 transition flex items-center gap-2 justify-center">
+                                <i class="bi bi-box-seam"></i> Booking Sekarang
+                            </a>
+                            <button onclick="document.getElementById('searchEmail').value = ''; document.getElementById('searchId').value = ''; searchBookings();" class="bg-slate-700 hover:bg-slate-600 text-white px-8 py-3 rounded-xl font-semibold inline-block hover:scale-105 transition flex items-center gap-2 justify-center">
+                                <i class="bi bi-arrow-clockwise"></i> Reset Pencarian
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    emptyState.classList.add('hidden');
+                    // Display filtered bookings
+                    const pakets = JSON.parse(localStorage.getItem('pakets')) || [];
+                    
+                    filteredBookings.forEach(booking => {
+                        const paket = pakets.find(p => p.id == booking.paketId) || { nama: 'Paket Tidak Ditemukan', harga: 0 };
+                        const totalHarga = paket.harga * booking.jumlahHari;
+                        const tanggal = new Date(booking.createdAt).toLocaleDateString('id-ID');
+                        
+                        const statusClass = booking.status === 'confirmed' ? 'badge-confirmed' : 
+                                          booking.status === 'cancelled' ? 'badge-cancelled' : 'badge-pending';
+                        const statusText = booking.status === 'confirmed' ? 'Terkonfirmasi' : 
+                                         booking.status === 'cancelled' ? 'Dibatalkan' : 'Menunggu';
+
+                        const bookingElement = document.createElement('div');
+                        bookingElement.className = 'glass-dark rounded-2xl p-6 mb-4 animate-fade-in hover:shadow-xl transition-shadow duration-300';
+                        bookingElement.innerHTML = `
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div class="flex-1">
+                                    <div class="flex flex-wrap items-center gap-3 mb-3">
+                                        <span class="${statusClass} px-4 py-2 rounded-lg font-semibold text-sm">
+                                            <i class="bi ${booking.status === 'confirmed' ? 'bi-check-circle' : booking.status === 'cancelled' ? 'bi-x-circle' : 'bi-clock'} mr-1"></i> ${statusText}
+                                        </span>
+                                        <span class="text-slate-400 text-sm bg-slate-800/50 px-3 py-1 rounded-lg">
+                                            <i class="bi bi-tag mr-1"></i> #${booking.id.toString().slice(-6)}
+                                        </span>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-orange-400 mb-3">${booking.nama}</h3>
+                                    <div class="space-y-2 text-slate-300">
+                                        <p class="flex items-center gap-2">
+                                            <i class="bi bi-envelope text-slate-400"></i>
+                                            <span>${booking.email}</span>
+                                        </p>
+                                        <p class="flex items-center gap-2">
+                                            <i class="bi bi-calendar-event text-slate-400"></i>
+                                            <span>Check-in: ${new Date(booking.checkin).toLocaleDateString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                                        </p>
+                                        <p class="flex items-center gap-2">
+                                            <i class="bi bi-box-seam text-slate-400"></i>
+                                            <span>${paket.nama}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="text-center md:text-right">
+                                    <div class="text-2xl font-bold text-gradient mb-2">Rp ${totalHarga.toLocaleString('id-ID')}</div>
+                                    <p class="text-slate-400 text-sm mb-4">${booking.jumlahHari} hari × ${booking.jumlahOrang} orang</p>
+                                    <button onclick="showBookingDetail(${booking.id})" class="bg-slate-700 hover:bg-slate-600 text-white px-6 py-2.5 rounded-lg font-semibold transition hover:scale-105 flex items-center gap-2 mx-auto md:mx-0">
+                                        <i class="bi bi-eye"></i> Lihat Detail
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="border-t border-slate-700 mt-4 pt-4 text-sm text-slate-400 flex items-center gap-2">
+                                <i class="bi bi-clock"></i> Dipesan pada ${tanggal}
+                            </div>
+                        `;
+                        
+                        bookingList.appendChild(bookingElement);
+                    });
+                }
+            }, 800);
+        }
+
+        // Show booking detail
+        function showBookingDetail(bookingId) {
+            const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+            const pakets = JSON.parse(localStorage.getItem('pakets')) || [];
+            const booking = bookings.find(b => b.id === bookingId);
+            
+            if (!booking) {
+                alert('Pesanan tidak ditemukan');
+                return;
+            }
+
+            const paket = pakets.find(p => p.id == booking.paketId) || { 
+                nama: 'Paket Tidak Ditemukan', 
+                harga: 0,
+                deskripsi: '-',
+                fasilitas: []
+            };
+            
+            const totalHarga = paket.harga * booking.jumlahHari;
+            const tanggalBooking = new Date(booking.createdAt).toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const statusClass = booking.status === 'confirmed' ? 'badge-confirmed' : 
+                              booking.status === 'cancelled' ? 'badge-cancelled' : 'badge-pending';
+            const statusText = booking.status === 'confirmed' ? 'Terkonfirmasi' : 
+                             booking.status === 'cancelled' ? 'Dibatalkan' : 'Menunggu Konfirmasi';
+            const statusDesc = booking.status === 'confirmed' ? 'Pesanan Anda sudah dikonfirmasi dan siap untuk check-in' :
+                             booking.status === 'cancelled' ? 'Pesanan Anda telah dibatalkan' :
+                             'Pesanan Anda sedang menunggu konfirmasi dari admin';
+
+            document.getElementById('detailContent').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-slate-700 mb-3 text-orange-500">Informasi Pemesanan</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="text-sm text-slate-500 mb-1">ID Pesanan</div>
+                                <div class="font-semibold text-lg">#${booking.id.toString().slice(-6)}</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-slate-500 mb-1">Tanggal Pemesanan</div>
+                                <div class="font-semibold">${tanggalBooking}</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-slate-500 mb-1">Status</div>
+                                <div class="flex items-center gap-2">
+                                    <span class="${statusClass} px-3 py-1.5 rounded-lg font-semibold text-sm">
+                                        ${statusText}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-slate-500 mt-1">${statusDesc}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-700 mb-3 text-orange-500">Informasi Pemesan</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="text-sm text-slate-500 mb-1">Nama Lengkap</div>
+                                <div class="font-semibold">${booking.nama}</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-slate-500 mb-1">Email</div>
+                                <div class="font-semibold">${booking.email}</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-slate-500 mb-1">No. Telepon</div>
+                                <div class="font-semibold">${booking.phone || '-'}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 text-orange-500">Detail Perjalanan</h4>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-slate-50 rounded-xl">
+                            <div class="text-sm text-slate-500 mb-1">Paket Camping</div>
+                            <div class="font-semibold text-lg mb-1">${paket.nama}</div>
+                            <p class="text-sm text-slate-600">${paket.deskripsi}</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="p-4 bg-slate-50 rounded-xl">
+                                <div class="text-sm text-slate-500 mb-1">Tanggal Check-in</div>
+                                <div class="font-semibold">${new Date(booking.checkin).toLocaleDateString('id-ID', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</div>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-xl">
+                                <div class="text-sm text-slate-500 mb-1">Durasi</div>
+                                <div class="font-semibold">${booking.jumlahHari} hari</div>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-xl">
+                                <div class="text-sm text-slate-500 mb-1">Jumlah Orang</div>
+                                <div class="font-semibold">${booking.jumlahOrang} orang</div>
+                            </div>
+                        </div>
+                        ${booking.catatan ? `
+                            <div class="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                <div class="text-sm text-amber-700 mb-1 flex items-center gap-1">
+                                    <i class="bi bi-sticky"></i> Catatan Tambahan
+                                </div>
+                                <div class="font-semibold text-amber-800">${booking.catatan}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 text-orange-500">Rincian Pembayaran</h4>
+                    <div class="space-y-3 p-4 bg-slate-50 rounded-xl">
+                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
+                            <span class="text-slate-600">Harga Paket</span>
+                            <span class="font-semibold">Rp ${paket.harga.toLocaleString('id-ID')}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-200">
+                            <span class="text-slate-600">${booking.jumlahHari} hari × ${booking.jumlahOrang} orang</span>
+                            <span class="font-semibold">Rp ${totalHarga.toLocaleString('id-ID')}</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-2">
+                            <span class="text-lg font-bold text-gradient">Total</span>
+                            <span class="text-2xl font-bold text-gradient">Rp ${totalHarga.toLocaleString('id-ID')}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t">
+                    <p class="text-sm text-slate-500 flex items-start gap-2">
+                        <i class="bi bi-info-circle text-orange-500 mt-0.5"></i>
+                        <span>Untuk perubahan atau pertanyaan, hubungi kami di info@camphub.com atau +62 812-3456-7890</span>
+                    </p>
+                </div>
+            `;
+
+            document.getElementById('bookingDetailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close detail modal
+        function closeDetailModal() {
+            document.getElementById('bookingDetailModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal when clicking outside or pressing escape
+        document.getElementById('bookingDetailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'bookingDetailModal') {
+                closeDetailModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('bookingDetailModal').classList.contains('hidden') === false) {
+                closeDetailModal();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load bookings on page load
+            loadBookings();
+            
+            // Auto fill email from URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const emailParam = urlParams.get('email');
+            if (emailParam) {
+                document.getElementById('searchEmail').value = emailParam;
+                searchBookings();
+            }
+            
+            // Add enter key support for search
+            document.getElementById('searchEmail').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchBookings();
+                }
+            });
+            
+            document.getElementById('searchId').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchBookings();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

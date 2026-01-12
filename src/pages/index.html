@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CampHub - Penyewaan Camping di Gunung Prau</title>
+    <link rel="stylesheet" href="../css/output.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+
+      * {
+        font-family: "Poppins", sans-serif;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-15px);
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .animate-float {
+        animation: float 4s ease-in-out infinite;
+      }
+
+      .animate-slide-up {
+        animation: slideUp 0.8s ease-out forwards;
+      }
+
+      .animate-fade-in {
+        animation: fadeIn 1s ease-out forwards;
+      }
+
+      .animate-scale-in {
+        animation: scaleIn 0.6s ease-out forwards;
+      }
+
+      .glass-morphism {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .glass-dark {
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .gradient-primary {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      }
+
+      .gradient-accent {
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+      }
+
+      .gradient-overlay {
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+      }
+
+      .card-hover {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .card-hover:hover {
+        transform: translateY(-12px) scale(1.02);
+      }
+
+      .text-gradient {
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .pattern-dots {
+        background-image: radial-gradient(circle, rgba(245, 158, 11, 0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+
+      .scroll-smooth {
+        scroll-behavior: smooth;
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #1e293b;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #f59e0b 0%, #f97316 100%);
+        border-radius: 10px;
+      }
+
+      /* Status Badge */
+      .badge-pending {
+        background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
+        color: #854d0e;
+      }
+
+      .badge-confirmed {
+        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        color: #166534;
+      }
+
+      .badge-cancelled {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #991b1b;
+      }
+
+      /* Notification */
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        max-width: 400px;
+        animation: slideInRight 0.3s ease;
+      }
+
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      /* Loading */
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9998;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(245, 158, 11, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary-orange);
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-slate-900 text-slate-100 scroll-smooth">
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="notification"></div>
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 glass-morphism shadow-lg">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20">
+          <div class="flex items-center gap-3">
+            <div class="text-4xl animate-float"><i class="bi bi-mountain"></i></div>
+            <div class="text-2xl lg:text-3xl font-bold text-gradient">CampHub</div>
+          </div>
+
+          <div class="hidden md:flex items-center space-x-8">
+            <a href="#home" class="text-slate-700 hover:text-orange-500 transition font-medium">Home</a>
+            <a href="#filosofi" class="text-slate-700 hover:text-orange-500 transition font-medium">Filosofi</a>
+            <a href="#paket" class="text-slate-700 hover:text-orange-500 transition font-medium">Paket</a>
+            <a href="#testimoni" class="text-slate-700 hover:text-orange-500 transition font-medium">Testimoni</a>
+            <a href="status-pesanan.html" class="text-slate-700 hover:text-orange-500 transition font-medium flex items-center gap-2"> <i class="bi bi-clock-history"></i> Status Pesanan </a>
+            <a href="login.html" class="gradient-accent text-white px-6 py-2.5 rounded-full hover:shadow-lg hover:scale-105 transition font-semibold">Login</a>
+          </div>
+
+          <button id="menuBtn" class="md:hidden text-3xl text-orange-500"><i class="bi bi-list"></i></button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden pb-6 space-y-4">
+          <a href="#home" class="block text-slate-700 hover:text-orange-500 transition font-medium py-2">Home</a>
+          <a href="#filosofi" class="block text-slate-700 hover:text-orange-500 transition font-medium py-2">Filosofi</a>
+          <a href="#paket" class="block text-slate-700 hover:text-orange-500 transition font-medium py-2">Paket</a>
+          <a href="#testimoni" class="block text-slate-700 hover:text-orange-500 transition font-medium py-2">Testimoni</a>
+          <a href="status-pesanan.html" class="block text-slate-700 hover:text-orange-500 transition font-medium py-2"> <i class="bi bi-clock-history"></i> Status Pesanan </a>
+          <a href="login.html" class="block gradient-accent text-white px-6 py-3 rounded-full text-center font-semibold"> <i class="bi bi-box-arrow-in-right"></i> Login Admin </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center justify-center relative overflow-hidden">
+      <div class="absolute inset-0">
+        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80" alt="Hero Background" class="w-full h-full object-cover" />
+        <div class="gradient-overlay absolute inset-0"></div>
+      </div>
+
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <div class="animate-slide-up">
+          <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+            Temukan Kedamaian di<br />
+            <span class="text-gradient">Puncak Gunung Prau</span>
+          </h1>
+          <p class="text-lg sm:text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-slate-200 leading-relaxed">Rasakan keindahan sunrise spektakuler, udara pegunungan yang menyegarkan, dan pengalaman camping yang tak terlupakan</p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a href="#paket" class="gradient-accent px-8 py-4 rounded-full text-lg font-semibold transition transform hover:scale-105 shadow-xl w-full sm:w-auto"> Lihat Paket Kami </a>
+            <a href="#filosofi" class="glass-dark px-8 py-4 rounded-full text-lg font-semibold transition transform hover:scale-105 w-full sm:w-auto"> Pelajari Lebih Lanjut </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <svg class="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 gradient-primary">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div class="text-center animate-fade-in">
+            <div class="text-4xl lg:text-5xl font-bold text-gradient mb-2">2.565m</div>
+            <div class="text-slate-300 text-sm lg:text-base">Ketinggian Puncak</div>
+          </div>
+          <div class="text-center animate-fade-in" style="animation-delay: 0.1s">
+            <div class="text-4xl lg:text-5xl font-bold text-gradient mb-2">1000+</div>
+            <div class="text-slate-300 text-sm lg:text-base">Pendaki Puas</div>
+          </div>
+          <div class="text-center animate-fade-in" style="animation-delay: 0.2s">
+            <div class="text-4xl lg:text-5xl font-bold text-gradient mb-2">4.9★</div>
+            <div class="text-slate-300 text-sm lg:text-base">Rating Pelanggan</div>
+          </div>
+          <div class="text-center animate-fade-in" style="animation-delay: 0.3s">
+            <div class="text-4xl lg:text-5xl font-bold text-gradient mb-2">5 Tahun</div>
+            <div class="text-slate-300 text-sm lg:text-base">Pengalaman</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filosofi Section -->
+    <section id="filosofi" class="py-20 bg-slate-800 pattern-dots">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 animate-slide-up">
+          <h2 class="text-4xl md:text-5xl font-bold mb-4">
+            <span class="text-gradient">Filosofi Gunung</span>
+          </h2>
+          <p class="text-slate-300 text-lg max-w-2xl mx-auto">Setiap pendakian adalah perjalanan menemukan diri sendiri</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          <div class="glass-dark p-8 rounded-2xl card-hover">
+            <div class="text-5xl mb-6">🧘</div>
+            <h3 class="text-2xl font-bold mb-4 text-orange-400">Kesabaran & Ketekunan</h3>
+            <p class="text-slate-300 leading-relaxed">Seperti mendaki gunung, hidup membutuhkan langkah demi langkah. Tidak ada jalan pintas menuju puncak, hanya ketekunan yang membawa kesuksesan.</p>
+          </div>
+
+          <div class="glass-dark p-8 rounded-2xl card-hover" style="animation-delay: 0.1s">
+            <div class="text-5xl mb-6">💪</div>
+            <h3 class="text-2xl font-bold mb-4 text-orange-400">Kekuatan Mental</h3>
+            <p class="text-slate-300 leading-relaxed">Gunung mengajarkan kita untuk melampaui batas. Ketika tubuh mengatakan berhenti, jiwa yang kuat mendorong kita melangkah lebih jauh.</p>
+          </div>
+
+          <div class="glass-dark p-8 rounded-2xl card-hover" style="animation-delay: 0.2s">
+            <div class="text-5xl mb-6">🌍</div>
+            <h3 class="text-2xl font-bold mb-4 text-orange-400">Kerendahan Hati</h3>
+            <p class="text-slate-300 leading-relaxed">Di hadapan kemegahan alam, kita menyadari betapa kecilnya diri kita. Gunung mengajarkan kita untuk tetap rendah hati dalam setiap pencapaian.</p>
+          </div>
+        </div>
+
+        <!-- Image with Quote -->
+        <div class="relative rounded-3xl overflow-hidden max-w-5xl mx-auto">
+          <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&q=80" alt="Mountain Philosophy" class="w-full h-96 object-cover" />
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent flex items-end">
+            <div class="p-8 lg:p-12">
+              <p class="text-2xl lg:text-3xl font-bold mb-4 italic">"Puncak gunung bukan tujuan, tapi perjalanan yang membentuk karakter kita"</p>
+              <p class="text-slate-300 text-lg">- Filosofi Pendaki</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="py-20 gradient-primary">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 animate-slide-up">
+          <h2 class="text-4xl md:text-5xl font-bold mb-4">Mengapa <span class="text-gradient">CampHub?</span></h2>
+          <p class="text-slate-300 text-lg max-w-2xl mx-auto">Pengalaman camping premium dengan standar keamanan tertinggi</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="glass-dark p-6 rounded-2xl hover:scale-105 transition">
+            <div class="text-5xl mb-4">🛡️</div>
+            <h3 class="text-xl font-bold mb-3 text-orange-400">Keamanan Terjamin</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">Pemandu bersertifikat dengan pengalaman 5+ tahun dan peralatan safety standar internasional</p>
+          </div>
+
+          <div class="glass-dark p-6 rounded-2xl hover:scale-105 transition">
+            <div class="text-5xl mb-4">⭐</div>
+            <h3 class="text-xl font-bold mb-3 text-orange-400">Fasilitas Premium</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">Tenda berkualitas tinggi, sleeping bag hangat, dan perlengkapan camping yang selalu terawat</p>
+          </div>
+
+          <div class="glass-dark p-6 rounded-2xl hover:scale-105 transition">
+            <div class="text-5xl mb-4">📸</div>
+            <h3 class="text-xl font-bold mb-3 text-orange-400">Dokumentasi Profesional</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">Tim fotografer kami siap mengabadikan momen berharga perjalanan Anda</p>
+          </div>
+
+          <div class="glass-dark p-6 rounded-2xl hover:scale-105 transition">
+            <div class="text-5xl mb-4">🍽️</div>
+            <h3 class="text-xl font-bold mb-3 text-orange-400">Kuliner Istimewa</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">Hidangan lezat dan bergizi yang disesuaikan dengan kebutuhan energi pendaki</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Gunung Prau -->
+    <section class="py-20 bg-slate-800">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="animate-slide-up">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6">Keajaiban <span class="text-gradient">Gunung Prau</span></h2>
+            <p class="text-slate-300 text-lg leading-relaxed mb-6">
+              Gunung Prau (2.565 mdpl) adalah salah satu destinasi hiking paling populer di Jawa Tengah. Terletak di perbatasan Wonosobo dan Dieng, gunung ini menawarkan pemandangan 360 derajat yang menakjubkan.
+            </p>
+            <p class="text-slate-300 text-lg leading-relaxed mb-8">Dengan medan yang relatif mudah, Gunung Prau cocok untuk pemula hingga profesional. Sunrise di puncak Prau menjadi momen yang ditunggu-tunggu setiap pendaki.</p>
+
+            <div class="grid grid-cols-2 gap-4 mb-8">
+              <div class="gradient-accent p-6 rounded-xl text-center">
+                <div class="text-3xl font-bold mb-2">2.565m</div>
+                <div class="text-sm">Ketinggian</div>
+              </div>
+              <div class="gradient-accent p-6 rounded-xl text-center">
+                <div class="text-3xl font-bold mb-2">6-8 jam</div>
+                <div class="text-sm">Waktu Mendaki</div>
+              </div>
+            </div>
+
+            <a href="#paket" class="inline-block gradient-accent px-8 py-4 rounded-full font-semibold hover:scale-105 transition"> Mulai Petualangan </a>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 animate-fade-in">
+            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80" alt="Prau 1" class="rounded-2xl h-64 object-cover" />
+            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80" alt="Prau 2" class="rounded-2xl h-64 object-cover mt-8" />
+            <img src="https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=600&q=80" alt="Prau 3" class="rounded-2xl h-64 object-cover" />
+            <img src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&q=80" alt="Prau 4" class="rounded-2xl h-64 object-cover mt-8" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Paket Section -->
+    <section id="paket" class="py-20 gradient-primary pattern-dots">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 animate-slide-up">
+          <h2 class="text-4xl md:text-5xl font-bold mb-4">Paket <span class="text-gradient">Camping Kami</span></h2>
+          <p class="text-slate-300 text-lg max-w-2xl mx-auto">Pilih paket yang sesuai dengan gaya petualangan Anda</p>
+        </div>
+
+        <div id="paketContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Paket akan dimuat dari localStorage -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section id="testimoni" class="py-20 bg-slate-800">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 animate-slide-up">
+          <h2 class="text-4xl md:text-5xl font-bold mb-4">Kata <span class="text-gradient">Mereka</span></h2>
+          <p class="text-slate-300 text-lg max-w-2xl mx-auto">Pengalaman nyata dari para petualang yang telah mempercayai kami</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="glass-dark p-8 rounded-2xl card-hover">
+            <div class="flex items-center gap-2 mb-4">
+              <div class="text-orange-400">★★★★★</div>
+            </div>
+            <p class="text-slate-300 mb-6 leading-relaxed italic">"Pengalaman yang luar biasa! Sunrise di Gunung Prau benar-benar memukau. Peralatan dari CampHub sangat berkualitas dan guide-nya sangat membantu."</p>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-accent flex items-center justify-center text-2xl">👨</div>
+              <div>
+                <div class="font-bold text-orange-400">Budi Santoso</div>
+                <div class="text-sm text-slate-400">Jakarta</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-dark p-8 rounded-2xl card-hover">
+            <div class="flex items-center gap-2 mb-4">
+              <div class="text-orange-400">★★★★★</div>
+            </div>
+            <p class="text-slate-300 mb-6 leading-relaxed italic">"Pertama kali camping dan memilih CampHub adalah keputusan terbaik! Fasilitasnya lengkap, pemandunya ramah, dan makanannya enak sekali."</p>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-accent flex items-center justify-center text-2xl">👩</div>
+              <div>
+                <div class="font-bold text-orange-400">Siti Rahayu</div>
+                <div class="text-sm text-slate-400">Bandung</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-dark p-8 rounded-2xl card-hover">
+            <div class="flex items-center gap-2 mb-4">
+              <div class="text-orange-400">★★★★★</div>
+            </div>
+            <p class="text-slate-300 mb-6 leading-relaxed italic">"Camping keluarga yang sempurna! Anak-anak sangat senang dan merasa aman. Tim CampHub sangat profesional dalam mengatur semuanya."</p>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-accent flex items-center justify-center text-2xl">👨‍👩‍👧‍👦</div>
+              <div>
+                <div class="font-bold text-orange-400">Keluarga Wijaya</div>
+                <div class="text-sm text-slate-400">Surabaya</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 gradient-accent relative overflow-hidden">
+      <div class="absolute inset-0 pattern-dots opacity-30"></div>
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center max-w-3xl mx-auto animate-scale-in">
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Siap Memulai Petualangan?</h2>
+          <p class="text-xl mb-8 leading-relaxed">Jangan tunda lagi! Ratusan pendaki telah merasakan pengalaman tak terlupakan bersama kami. Sekarang giliran Anda!</p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="#paket" class="bg-slate-900 text-white px-10 py-4 rounded-full text-lg font-semibold hover:scale-105 transition shadow-xl"> Booking Sekarang </a>
+            <a href="#testimoni" class="bg-white text-orange-600 px-10 py-4 rounded-full text-lg font-semibold hover:scale-105 transition shadow-xl"> Lihat Testimoni </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal Booking -->
+    <div id="bookingModal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 backdrop-blur-sm">
+        <div class="min-h-screen flex items-center justify-center p-4 overflow-hidden">
+            <div class="glass-morphism rounded-3xl w-full max-w-lg shadow-2xl animate-scale-in max-h-[90vh] md:max-h-[85vh] overflow-hidden flex flex-col">
+                <!-- Header yang sticky -->
+                <div class="flex justify-between items-center p-6 pb-4 border-b border-slate-200 sticky top-0 bg-white/95 backdrop-blur-sm z-10">
+                    <h3 class="text-2xl md:text-3xl font-bold text-gradient flex items-center gap-2">
+                        <i class="bi bi-cart-check"></i> Pesan Sekarang
+                    </h3>
+                    <button id="closeModal" class="text-slate-400 hover:text-slate-600 text-3xl md:text-4xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded-lg p-1" 
+                            aria-label="Tutup modal">
+                        &times;
+                    </button>
+                </div>
+                
+                <!-- Form yang bisa di-scroll -->
+                <div class="overflow-y-auto flex-1 px-6">
+                    <form id="bookingForm" class="space-y-5 py-4 pb-8">
+                        <input type="hidden" id="paketId" />
+                        
+                        <div>
+                            <label class="block mb-2 font-semibold text-slate-700">
+                                Nama Lengkap <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="nama" required 
+                                   class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-orange-500 focus:outline-none transition text-slate-800"
+                                   placeholder="Masukkan nama lengkap Anda">
+                            <p class="text-red-500 text-sm mt-1 hidden" id="namaError">Nama wajib diisi</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block mb-2 font-semibold text-slate-700">
+                                Email <span class="text-red-500">*</span>
+                            </label>
+                            <input type="email" id="email" required 
+                                   class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-orange-500 focus:outline-none transition text-slate-800"
+                                   placeholder="contoh@gmail.com">
+                            <p class="text-red-500 text-sm mt-1 hidden" id="emailError">Email tidak valid</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block mb-2 font-semibold text-slate-700">
+                                No. Telepon <span class="text-red-500">*</span>
+                            </label>
+                            <input type="tel" id="telepon" required 
+                                   class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-orange-500 focus:outline-none transition text-slate-800"
+                                   placeholder="081234567890">
+                            <p class="text-red-500 text-sm mt-1 hidden" id="teleponError">Nomor telepon wajib diisi</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block mb-2 font-semibold text-slate-700">
+                                Tanggal Check-in <span class="text-red-500">*</span>
+                            </label>
+                            <input type="date" id="checkin" required 
+                                   class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-orange-500 focus:outline-none transition text-slate-800">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block mb-2 font-semibold text-slate-700">
+                                    Jumlah Hari <span class="text-red-500">*</span>
+                                </label>
+                                <input type="number" id="jumlahHari" min="1" value="1" required 
+                                       class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-orange-500 focus:outline-none transition text-slate-800">
+                            </div>
+                            <div>
+                                <label class="block mb-2 font-semibold text-slate-700">
+                                    Jumlah Orang <span class="text-red-500">*</span>
+                                </label>
+                                <input type="number" id="jumlahOrang" min="1" value="1" required 
+                                       class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-orange-500 focus:outline-none transition text-slate-800">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block mb-2 font-semibold text-slate-700">
+                                Catatan Tambahan (Opsional)
+                            </label>
+                            <textarea id="catatan" 
+                                      class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-orange-500 focus:outline-none transition text-slate-800"
+                                      rows="3" 
+                                      placeholder="Tulis catatan khusus atau kebutuhan tambahan..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Tombol yang sticky di bawah -->
+                <div class="border-t border-slate-200 p-6 pt-4 sticky bottom-0 bg-white/95 backdrop-blur-sm">
+                    <button type="submit" form="bookingForm" 
+                            class="w-full gradient-accent text-white py-4 rounded-xl transition font-semibold shadow-lg hover:scale-105 flex items-center justify-center gap-2">
+                        <i class="bi bi-check-circle"></i> Konfirmasi Booking
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="gradient-primary py-16 border-t border-slate-700">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          <div>
+            <div class="flex items-center gap-2 mb-4">
+              <div class="text-3xl"><i class="bi bi-mountain"></i></div>
+              <div class="text-2xl font-bold text-gradient">CampHub</div>
+            </div>
+            <p class="text-slate-400 leading-relaxed mb-4">Membawa Anda lebih dekat dengan alam di Gunung Prau dengan pengalaman camping yang tak terlupakan.</p>
+            <div class="flex gap-3">
+              <a href="#" class="w-10 h-10 rounded-full bg-slate-700 hover:bg-orange-500 flex items-center justify-center transition">
+                <i class="bi bi-facebook"></i>
+              </a>
+              <a href="#" class="w-10 h-10 rounded-full bg-slate-700 hover:bg-orange-500 flex items-center justify-center transition">
+                <i class="bi bi-instagram"></i>
+              </a>
+              <a href="#" class="w-10 h-10 rounded-full bg-slate-700 hover:bg-orange-500 flex items-center justify-center transition">
+                <i class="bi bi-twitter"></i>
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-xl font-bold mb-4 text-orange-400 flex items-center gap-2"><i class="bi bi-link"></i> Quick Links</h4>
+            <ul class="space-y-3 text-slate-400">
+              <li>
+                <a href="#home" class="hover:text-orange-400 transition flex items-center gap-2"><i class="bi bi-house"></i> Home</a>
+              </li>
+              <li>
+                <a href="#paket" class="hover:text-orange-400 transition flex items-center gap-2"><i class="bi bi-box-seam"></i> Paket Camping</a>
+              </li>
+              <li>
+                <a href="status-pesanan.html" class="hover:text-orange-400 transition flex items-center gap-2"><i class="bi bi-clock-history"></i> Status Pesanan</a>
+              </li>
+              <li>
+                <a href="#testimoni" class="hover:text-orange-400 transition flex items-center gap-2"><i class="bi bi-chat-quote"></i> Testimoni</a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="text-xl font-bold mb-4 text-orange-400 flex items-center gap-2"><i class="bi bi-headset"></i> Layanan</h4>
+            <ul class="space-y-3 text-slate-400">
+              <li class="flex items-center gap-2"><i class="bi bi-telephone"></i> +62 812-3456-7890</li>
+              <li class="flex items-center gap-2"><i class="bi bi-envelope"></i> info@camphub.com</li>
+              <li class="flex items-center gap-2"><i class="bi bi-geo-alt"></i> Gunung Prau, Wonosobo</li>
+              <li class="flex items-center gap-2"><i class="bi bi-clock"></i> 24/7 Support</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="text-xl font-bold mb-4 text-orange-400 flex items-center gap-2"><i class="bi bi-info-circle"></i> Informasi</h4>
+            <ul class="space-y-3 text-slate-400">
+              <li>
+                <a href="#" class="hover:text-orange-400 transition flex items-center gap-2"><i class="bi bi-file-text"></i> Syarat & Ketentuan</a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-orange-400 transition flex items-center gap-2"><i class="bi bi-shield-check"></i> Kebijakan Privasi</a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-orange-400 transition flex items-center gap-2"><i class="bi bi-question-circle"></i> FAQ</a>
+              </li>
+              <li>
+                <a href="#" class="hover:text-orange-400 transition flex items-center gap-2"><i class="bi bi-phone"></i> Hubungi Kami</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border-t border-slate-700 pt-8">
+          <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-slate-400 text-center md:text-left flex items-center gap-2"><i class="bi bi-c-circle"></i> 2026 CampHub. All rights reserved.</p>
+            <div class="flex gap-6 text-slate-400 text-sm">
+              <a href="#" class="hover:text-orange-400 transition">Terms</a>
+              <a href="#" class="hover:text-orange-400 transition">Privacy</a>
+              <a href="#" class="hover:text-orange-400 transition">Cookies</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Notification System
+      class NotificationSystem {
+        static show(message, type = "success") {
+          const container = document.getElementById("notificationContainer");
+          const notification = document.createElement("div");
+          notification.className = `bg-white p-4 rounded-lg shadow-lg mb-3 border-l-4 ${type === "success" ? "border-green-500" : type === "error" ? "border-red-500" : "border-blue-500"}`;
+
+          const icon = type === "success" ? "bi-check-circle-fill text-green-500" : type === "error" ? "bi-x-circle-fill text-red-500" : "bi-info-circle-fill text-blue-500";
+
+          notification.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <i class="bi ${icon} text-xl"></i>
+                        <div class="text-slate-800">${message}</div>
+                    </div>
+                `;
+
+          container.appendChild(notification);
+
+          // Auto remove after 5 seconds
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.remove();
+            }
+          }, 5000);
+        }
+      }
+
+      // Loading Overlay
+      class LoadingOverlay {
+        static show() {
+          document.getElementById("loadingOverlay").classList.add("active");
+        }
+
+        static hide() {
+          document.getElementById("loadingOverlay").classList.remove("active");
+        }
+      }
+
+      // Mobile Menu Toggle
+      document.getElementById("menuBtn").addEventListener("click", () => {
+        document.getElementById("mobileMenu").classList.toggle("hidden");
+      });
+
+      // Load Paket dari localStorage
+      function loadPaket() {
+        LoadingOverlay.show();
+
+        setTimeout(() => {
+          const pakets = JSON.parse(localStorage.getItem("pakets")) || [];
+          const container = document.getElementById("paketContainer");
+
+          // Jika tidak ada paket di localStorage, gunakan default
+          const defaultPakets = [
+            {
+              id: 1,
+              nama: "Glamping Premium",
+              harga: 750000,
+              deskripsi: "Pengalaman camping mewah dengan tenda glamping, kasur empuk, dan fasilitas premium untuk kenyamanan maksimal",
+              fasilitas: ["Tenda Glamping 2 Orang", "Kasur King Size", "Pemanas Ruangan", "Lampu LED", "Kamar Mandi Pribadi", "Sarapan Premium", "Fotografi Profesional"],
+              gambar: "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=800&q=80",
+              badge: "Popular",
+            },
+            {
+              id: 2,
+              nama: "Adventure Camp",
+              harga: 350000,
+              deskripsi: "Paket camping standar dengan peralatan lengkap untuk pengalaman mendaki yang authentic dan menyenangkan",
+              fasilitas: ["Tenda 4 Orang", "Sleeping Bag Premium", "Matras Tebal", "Lampu Camping", "Peralatan Memasak", "Makan 2x Sehari"],
+              gambar: "https://images.unsplash.com/photo-1476041800959-2f6bb412c8ce?w=800&q=80",
+              badge: "Best Value",
+            },
+            {
+              id: 3,
+              nama: "Family Camp",
+              harga: 1200000,
+              deskripsi: "Paket keluarga lengkap dengan pemandu berpengalaman, area bermain anak, dan fasilitas untuk seluruh keluarga",
+              fasilitas: ["3 Tenda Besar", "Pemandu Berpengalaman", "Area Bermain Anak", "Dapur Outdoor", "Fire Pit", "Makan 3x Sehari", "Dokumentasi Foto"],
+              gambar: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800&q=80",
+              badge: "Family Choice",
+            },
+          ];
+
+          const paketsToShow = pakets.length > 0 ? pakets : defaultPakets;
+
+          if (pakets.length === 0) {
+            localStorage.setItem("pakets", JSON.stringify(defaultPakets));
+          }
+
+          container.innerHTML = paketsToShow
+            .map(
+              (paket, index) => `
+                    <div class="card-hover glass-dark rounded-2xl overflow-hidden shadow-xl animate-slide-up" style="animation-delay: ${index * 0.1}s">
+                        <div class="relative h-56 overflow-hidden">
+                            <img src="${paket.gambar}" alt="${paket.nama}" class="w-full h-full object-cover hover:scale-110 transition duration-700">
+                            <div class="absolute top-4 left-4 bg-orange-500 text-white px-4 py-1.5 rounded-full text-xs font-bold">
+                                ${paket.badge || "New"}
+                            </div>
+                            <div class="absolute top-4 right-4 glass-dark text-white px-4 py-2 rounded-full font-bold">
+                                Rp ${paket.harga.toLocaleString("id-ID")}
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-2xl font-bold mb-3 text-orange-400">${paket.nama}</h3>
+                            <p class="text-slate-300 mb-5 text-sm leading-relaxed">${paket.deskripsi}</p>
+                            <div class="mb-6">
+                                <p class="font-semibold text-slate-200 mb-3 flex items-center gap-2">
+                                    <i class="bi bi-check-circle text-orange-400"></i> Fasilitas Lengkap:
+                                </p>
+                                <ul class="text-sm text-slate-300 space-y-2">
+                                    ${paket.fasilitas
+                                      .slice(0, 3)
+                                      .map(
+                                        (f) => `
+                                        <li class="flex items-start gap-2">
+                                            <i class="bi bi-check text-orange-400 mt-0.5"></i>
+                                            <span>${f}</span>
+                                        </li>
+                                    `
+                                      )
+                                      .join("")}
+                                    ${paket.fasilitas.length > 3 ? `<li class="text-orange-400 text-sm">+ ${paket.fasilitas.length - 3} fasilitas lainnya</li>` : ""}
+                                </ul>
+                            </div>
+                            <button onclick="openBooking(${paket.id})" class="w-full gradient-accent text-white py-3.5 rounded-xl transition font-semibold shadow-lg hover:scale-105 flex items-center justify-center gap-2">
+                                <i class="bi bi-cart-plus"></i> Pesan Sekarang
+                            </button>
+                        </div>
+                    </div>
+                `
+            )
+            .join("");
+
+          LoadingOverlay.hide();
+        }, 800);
+      }
+
+      // Open Booking Modal
+      function openBooking(paketId) {
+        const pakets = JSON.parse(localStorage.getItem("pakets")) || [];
+        const paket = pakets.find((p) => p.id === paketId) || { id: paketId };
+
+        document.getElementById("paketId").value = paketId;
+        document.getElementById("bookingModal").classList.remove("hidden");
+
+        // Set minimum date
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const checkinInput = document.getElementById("checkin");
+        checkinInput.min = tomorrow.toISOString().split("T")[0];
+
+        // Set default to tomorrow
+        checkinInput.value = checkinInput.min;
+
+        // Prevent body scroll when modal is open
+        document.body.style.overflow = "hidden";
+      }
+
+      // Close Modal dengan beberapa cara
+      function closeBookingModal() {
+        document.getElementById("bookingModal").classList.add("hidden");
+        document.getElementById("bookingForm").reset();
+        // Restore body scroll
+        document.body.style.overflow = "";
+      }
+
+      // Event listener untuk tombol close
+      document.getElementById("closeModal").addEventListener("click", closeBookingModal);
+
+      // Close modal when clicking outside (hanya pada backdrop)
+      document.getElementById("bookingModal").addEventListener("click", (e) => {
+        if (e.target.id === "bookingModal") {
+          closeBookingModal();
+        }
+      });
+
+      // Close modal dengan escape key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !document.getElementById("bookingModal").classList.contains("hidden")) {
+          closeBookingModal();
+        }
+      });
+
+      // Form Validation (sama seperti sebelumnya)
+      function validateForm() {
+        let isValid = true;
+
+        // Reset errors
+        document.querySelectorAll('[id$="Error"]').forEach((el) => el.classList.add("hidden"));
+
+        const nama = document.getElementById("nama").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const telepon = document.getElementById("telepon").value.trim();
+        const checkin = document.getElementById("checkin").value;
+
+        // Validate name
+        if (!nama) {
+          document.getElementById("namaError").classList.remove("hidden");
+          isValid = false;
+        }
+
+        // Validate email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+          document.getElementById("emailError").classList.remove("hidden");
+          isValid = false;
+        }
+
+        // Validate phone
+        if (!telepon) {
+          document.getElementById("teleponError").classList.remove("hidden");
+          isValid = false;
+        }
+
+        // Validate date
+        if (!checkin) {
+          isValid = false;
+        }
+
+        return isValid;
+      }
+
+      // Submit Booking Form
+      document.getElementById("bookingForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (!validateForm()) {
+          NotificationSystem.show("Harap lengkapi semua field yang wajib diisi!", "error");
+          return;
+        }
+
+        LoadingOverlay.show();
+
+        try {
+          const booking = {
+            id: Date.now(),
+            paketId: parseInt(document.getElementById("paketId").value),
+            nama: document.getElementById("nama").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            phone: document.getElementById("telepon").value.trim(),
+            checkin: document.getElementById("checkin").value,
+            jumlahHari: parseInt(document.getElementById("jumlahHari").value),
+            jumlahOrang: parseInt(document.getElementById("jumlahOrang").value),
+            catatan: document.getElementById("catatan").value.trim(),
+            createdAt: new Date().toISOString(),
+            status: "pending",
+          };
+
+          const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+          bookings.push(booking);
+          localStorage.setItem("bookings", JSON.stringify(bookings));
+
+          // Simulate API call delay
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          closeBookingModal();
+
+          NotificationSystem.show("🎉 Pemesanan berhasil! Kami akan menghubungi Anda untuk konfirmasi.", "success");
+
+          // Auto redirect to status page after 2 seconds
+          setTimeout(() => {
+            window.location.href = "status-pesanan.html";
+          }, 2000);
+        } catch (error) {
+          NotificationSystem.show("Terjadi kesalahan. Silakan coba lagi.", "error");
+        } finally {
+          LoadingOverlay.hide();
+        }
+      });
+
+      // Close Modal
+      document.getElementById("closeModal").addEventListener("click", () => {
+        document.getElementById("bookingModal").classList.add("hidden");
+        document.getElementById("bookingForm").reset();
+      });
+
+      // Close modal when clicking outside
+      document.getElementById("bookingModal").addEventListener("click", (e) => {
+        if (e.target.id === "bookingModal") {
+          document.getElementById("bookingModal").classList.add("hidden");
+          document.getElementById("bookingForm").reset();
+        }
+      });
+
+      // Form Validation
+      function validateForm() {
+        let isValid = true;
+
+        // Reset errors
+        document.querySelectorAll('[id$="Error"]').forEach((el) => el.classList.add("hidden"));
+
+        const nama = document.getElementById("nama").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const telepon = document.getElementById("telepon").value.trim();
+        const checkin = document.getElementById("checkin").value;
+
+        // Validate name
+        if (!nama) {
+          document.getElementById("namaError").classList.remove("hidden");
+          isValid = false;
+        }
+
+        // Validate email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+          document.getElementById("emailError").classList.remove("hidden");
+          isValid = false;
+        }
+
+        // Validate phone
+        if (!telepon) {
+          document.getElementById("teleponError").classList.remove("hidden");
+          isValid = false;
+        }
+
+        // Validate date
+        if (!checkin) {
+          isValid = false;
+        }
+
+        return isValid;
+      }
+
+      // Submit Booking Form
+      document.getElementById("bookingForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (!validateForm()) {
+          NotificationSystem.show("Harap lengkapi semua field yang wajib diisi!", "error");
+          return;
+        }
+
+        LoadingOverlay.show();
+
+        try {
+          const booking = {
+            id: Date.now(),
+            paketId: parseInt(document.getElementById("paketId").value),
+            nama: document.getElementById("nama").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            phone: document.getElementById("telepon").value.trim(),
+            checkin: document.getElementById("checkin").value,
+            jumlahHari: parseInt(document.getElementById("jumlahHari").value),
+            jumlahOrang: parseInt(document.getElementById("jumlahOrang").value),
+            catatan: document.getElementById("catatan").value.trim(),
+            createdAt: new Date().toISOString(),
+            status: "pending",
+          };
+
+          const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+          bookings.push(booking);
+          localStorage.setItem("bookings", JSON.stringify(bookings));
+
+          // Simulate API call delay
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          document.getElementById("bookingModal").classList.add("hidden");
+          document.getElementById("bookingForm").reset();
+
+          NotificationSystem.show("🎉 Pemesanan berhasil! Kami akan menghubungi Anda untuk konfirmasi.", "success");
+
+          // Auto redirect to status page after 2 seconds
+          setTimeout(() => {
+            window.location.href = "status-pesanan.html";
+          }, 2000);
+        } catch (error) {
+          NotificationSystem.show("Terjadi kesalahan. Silakan coba lagi.", "error");
+        } finally {
+          LoadingOverlay.hide();
+        }
+      });
+
+      // Improve modal accessibility
+      document.addEventListener("DOMContentLoaded", () => {
+        // Focus trap untuk modal
+        const modal = document.getElementById("bookingModal");
+        const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        const firstFocusableElement = focusableElements[0];
+        const lastFocusableElement = focusableElements[focusableElements.length - 1];
+
+        modal.addEventListener("keydown", function (e) {
+          if (e.key === "Tab") {
+            if (e.shiftKey) {
+              if (document.activeElement === firstFocusableElement) {
+                e.preventDefault();
+                lastFocusableElement.focus();
+              }
+            } else {
+              if (document.activeElement === lastFocusableElement) {
+                e.preventDefault();
+                firstFocusableElement.focus();
+              }
+            }
+          }
+        });
+      });
+
+      // Smooth scroll
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+            // Close mobile menu if open
+            document.getElementById("mobileMenu").classList.add("hidden");
+          }
+        });
+      });
+
+      // Scroll Animation Observer
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = "1";
+            entry.target.style.transform = "translateY(0)";
+          }
+        });
+      }, observerOptions);
+
+      // Observe all animated elements
+      document.addEventListener("DOMContentLoaded", () => {
+        const animatedElements = document.querySelectorAll(".animate-slide-up, .animate-fade-in, .card-hover");
+        animatedElements.forEach((el) => {
+          el.style.opacity = "0";
+          el.style.transform = "translateY(30px)";
+          el.style.transition = "all 0.6s ease-out";
+          observer.observe(el);
+        });
+
+        // Load pakets
+        loadPaket();
+      });
+    </script>
+  </body>
+</html>
