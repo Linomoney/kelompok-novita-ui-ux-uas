@@ -1,622 +1,641 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard - CampHub</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
-        
-        * {
-            font-family: 'Poppins', sans-serif;
-        }
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
 
-        :root {
-            --primary-orange: #f59e0b;
-            --primary-dark: #0f172a;
-            --secondary-dark: #1e293b;
-            --slate-700: #334155;
-            --slate-600: #475569;
-            --slate-200: #e2e8f0;
-            --slate-100: #f1f5f9;
-            --success-green: #10b981;
-            --warning-yellow: #f59e0b;
-            --danger-red: #ef4444;
-            --info-blue: #3b82f6;
-        }
+      * {
+        font-family: "Poppins", sans-serif;
+      }
 
-        body {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 50%, var(--slate-700) 100%);
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
+      :root {
+        --primary-orange: #f59e0b;
+        --primary-dark: #0f172a;
+        --secondary-dark: #1e293b;
+        --slate-700: #334155;
+        --slate-600: #475569;
+        --slate-200: #e2e8f0;
+        --slate-100: #f1f5f9;
+        --success-green: #10b981;
+        --warning-yellow: #f59e0b;
+        --danger-red: #ef4444;
+        --info-blue: #3b82f6;
+      }
 
-        /* Background Pattern */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: radial-gradient(circle, rgba(245, 158, 11, 0.1) 1px, transparent 1px);
-            background-size: 30px 30px;
-            opacity: 0.3;
-            z-index: 0;
-            pointer-events: none;
-        }
+      body {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 50%, var(--slate-700) 100%);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+      }
 
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(15, 23, 42, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
+      /* Background Pattern */
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: radial-gradient(circle, rgba(245, 158, 11, 0.1) 1px, transparent 1px);
+        background-size: 30px 30px;
+        opacity: 0.3;
+        z-index: 0;
+        pointer-events: none;
+      }
 
-        .loading-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+      /* Loading Overlay */
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
 
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(245, 158, 11, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--primary-orange);
-            animation: spin 1s ease-in-out infinite;
-        }
+      .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+      .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(245, 158, 11, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary-orange);
+        animation: spin 1s ease-in-out infinite;
+      }
 
-        /* Notification */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9998;
-            min-width: 300px;
-            max-width: 400px;
-            animation: slideInRight 0.3s ease;
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
+      }
 
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+      /* Notification */
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9998;
+        min-width: 300px;
+        max-width: 400px;
+        animation: slideInRight 0.3s ease;
+      }
+
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
         }
-
-        .notification.success {
-            border-left: 4px solid var(--success-green);
+        to {
+          transform: translateX(0);
+          opacity: 1;
         }
+      }
 
-        .notification.warning {
-            border-left: 4px solid var(--warning-yellow);
+      .notification.success {
+        border-left: 4px solid var(--success-green);
+      }
+
+      .notification.warning {
+        border-left: 4px solid var(--warning-yellow);
+      }
+
+      .notification.error {
+        border-left: 4px solid var(--danger-red);
+      }
+
+      .notification.info {
+        border-left: 4px solid var(--info-blue);
+      }
+
+      /* Navbar Styling */
+      .navbar {
+        background: rgba(255, 255, 255, 0.98) !important;
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 1rem 0;
+      }
+
+      .navbar-brand {
+        font-size: 1.75rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-back {
+        background: var(--primary-orange);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-back:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        color: white;
+      }
+
+      .btn-logout {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 2px solid #ef4444;
+        border-radius: 12px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-logout:hover {
+        background: #ef4444;
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      /* Container */
+      .container-main {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Stats Cards */
+      .stats-card {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+      }
+
+      .stats-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+      }
+
+      .stats-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+        color: white;
+      }
+
+      .stats-icon.orange {
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+      }
+
+      .stats-icon.blue {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      }
+
+      .stats-icon.green {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      }
+
+      .stats-icon.purple {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      }
+
+      /* Card Styling */
+      .card {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        overflow: hidden;
+      }
+
+      .card:hover {
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+      }
+
+      .card-header {
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        color: white;
+        border: none;
+        border-radius: 20px 20px 0 0 !important;
+        padding: 1.5rem;
+        font-weight: 700;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      /* Nav Tabs */
+      .nav-tabs {
+        border: none;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .nav-link {
+        background: transparent;
+        border: 2px solid transparent;
+        color: var(--slate-600);
+        padding: 0.875rem 1.75rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .nav-link:hover {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--primary-orange);
+        transform: translateY(-2px);
+      }
+
+      .nav-link.active {
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        color: white !important;
+        border-color: transparent;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+      }
+
+      /* Form Styling */
+      .form-label {
+        font-weight: 600;
+        color: var(--secondary-dark);
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+      }
+
+      .form-control,
+      .form-select {
+        border: 2px solid var(--slate-200);
+        border-radius: 12px;
+        padding: 0.875rem 1rem;
+        transition: all 0.3s ease;
+        background: var(--slate-100);
+      }
+
+      .form-control:focus,
+      .form-select:focus {
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 0.25rem rgba(245, 158, 11, 0.15);
+        background: white;
+      }
+
+      .form-control.is-invalid,
+      .form-select.is-invalid {
+        border-color: var(--danger-red);
+        box-shadow: 0 0 0 0.25rem rgba(239, 68, 68, 0.15);
+      }
+
+      .invalid-feedback {
+        font-size: 0.875rem;
+        color: var(--danger-red);
+        margin-top: 0.25rem;
+      }
+
+      /* Button Styling */
+      .btn-primary {
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+      }
+
+      .btn-secondary {
+        background: var(--slate-600);
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-secondary:hover {
+        background: var(--slate-700);
+        transform: translateY(-2px);
+      }
+
+      .btn-info {
+        background: #0ea5e9;
+        border: none;
+        border-radius: 10px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-info:hover {
+        background: #0284c7;
+        transform: translateY(-2px);
+      }
+
+      /* Tambahkan di bagian CSS modal */
+      .edit-mode .card-header {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+      }
+
+      .edit-mode .btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+      }
+
+      .edit-mode .btn-primary:hover {
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+      }
+
+      .btn-danger {
+        background: #ef4444;
+        border: none;
+        border-radius: 10px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-danger:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+      }
+
+      /* Table Styling */
+      .table-responsive {
+        border-radius: 0 0 20px 20px;
+        overflow: hidden;
+      }
+
+      .table {
+        margin-bottom: 0;
+      }
+
+      .table thead {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(249, 115, 22, 0.1) 100%);
+      }
+
+      .table th {
+        color: var(--primary-orange);
+        font-weight: 700;
+        border: none;
+        padding: 1.25rem;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+      }
+
+      .table td {
+        padding: 1.25rem;
+        border-color: var(--slate-200);
+        vertical-align: middle;
+        color: var(--secondary-dark);
+      }
+
+      .table tbody tr {
+        transition: all 0.2s ease;
+      }
+
+      .table tbody tr:hover {
+        background: rgba(245, 158, 11, 0.05);
+      }
+
+      /* Badge Styling */
+      .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
+
+      .badge-pending {
+        background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
+        color: #854d0e;
+      }
+
+      .badge-confirmed {
+        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        color: #166534;
+      }
+
+      .badge-cancelled {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #991b1b;
+      }
+
+      /* Paket Item */
+      .paket-item {
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid var(--slate-200);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .paket-item:hover {
+        border-color: var(--primary-orange);
+        box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15);
+        transform: translateY(-3px);
+      }
+
+      .paket-item h5 {
+        color: var(--primary-orange);
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        font-size: 1.5rem;
+      }
+
+      .paket-item .text-muted {
+        color: var(--slate-600) !important;
+      }
+
+      .paket-item .text-success {
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* Modal Styling */
+      .modal-content {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      .modal-header {
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        color: white;
+        border-radius: 20px 20px 0 0;
+        border: none;
+        padding: 1.5rem;
+      }
+
+      .modal-title {
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .modal-body {
+        padding: 2rem;
+      }
+
+      .booking-detail-item {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--slate-200);
+      }
+
+      .booking-detail-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      .booking-detail-label {
+        font-weight: 600;
+        color: var(--slate-600);
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+      }
+
+      .booking-detail-value {
+        font-size: 1.1rem;
+        color: var(--secondary-dark);
+        font-weight: 500;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
         }
-
-        .notification.error {
-            border-left: 4px solid var(--danger-red);
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
+      }
 
-        .notification.info {
-            border-left: 4px solid var(--info-blue);
-        }
+      .tab-content {
+        animation: fadeIn 0.5s ease;
+      }
 
-        /* Navbar Styling */
-        .navbar {
-            background: rgba(255, 255, 255, 0.98) !important;
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(245, 158, 11, 0.2);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 1rem 0;
-        }
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--slate-600);
+      }
 
+      .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: var(--slate-300);
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
         .navbar-brand {
-            font-size: 1.75rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+          font-size: 1.25rem;
         }
 
-        .btn-back {
-            background: var(--primary-orange);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 0.6rem 1.2rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-back:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
-            color: white;
-        }
-
-        .btn-logout {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 2px solid #ef4444;
-            border-radius: 12px;
-            padding: 0.6rem 1.2rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-logout:hover {
-            background: #ef4444;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        /* Container */
-        .container-main {
-            margin-top: 2rem;
-            margin-bottom: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Stats Cards */
         .stats-card {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 1.5rem;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+          margin-bottom: 1rem;
         }
 
-        .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-        }
-
-        .stats-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
-        }
-
-        .stats-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.75rem;
-            margin-bottom: 1rem;
-            color: white;
-        }
-
-        .stats-icon.orange {
-            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
-        }
-
-        .stats-icon.blue {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        }
-
-        .stats-icon.green {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        }
-
-        .stats-icon.purple {
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-        }
-
-        /* Card Styling */
-        .card {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            border-radius: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-
-        .card:hover {
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
-            color: white;
-            border: none;
-            border-radius: 20px 20px 0 0 !important;
-            padding: 1.5rem;
-            font-weight: 700;
-            font-size: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Nav Tabs */
         .nav-tabs {
-            border: none;
-            gap: 0.75rem;
-            margin-bottom: 2rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+          flex-direction: column;
         }
 
         .nav-link {
-            background: transparent;
-            border: 2px solid transparent;
-            color: var(--slate-600);
-            padding: 0.875rem 1.75rem;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+          width: 100%;
+          justify-content: center;
         }
 
-        .nav-link:hover {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--primary-orange);
-            transform: translateY(-2px);
+        .paket-item .col-md-4 {
+          margin-top: 1rem;
         }
-
-        .nav-link.active {
-            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
-            color: white !important;
-            border-color: transparent;
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-        }
-
-        /* Form Styling */
-        .form-label {
-            font-weight: 600;
-            color: var(--secondary-dark);
-            margin-bottom: 0.75rem;
-            font-size: 0.95rem;
-        }
-
-        .form-control, .form-select {
-            border: 2px solid var(--slate-200);
-            border-radius: 12px;
-            padding: 0.875rem 1rem;
-            transition: all 0.3s ease;
-            background: var(--slate-100);
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-orange);
-            box-shadow: 0 0 0 0.25rem rgba(245, 158, 11, 0.15);
-            background: white;
-        }
-
-        .form-control.is-invalid, .form-select.is-invalid {
-            border-color: var(--danger-red);
-            box-shadow: 0 0 0 0.25rem rgba(239, 68, 68, 0.15);
-        }
-
-        .invalid-feedback {
-            font-size: 0.875rem;
-            color: var(--danger-red);
-            margin-top: 0.25rem;
-        }
-
-        /* Button Styling */
-        .btn-primary {
-            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
-            border: none;
-            border-radius: 12px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 700;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--slate-600);
-            border: none;
-            border-radius: 12px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-secondary:hover {
-            background: var(--slate-700);
-            transform: translateY(-2px);
-        }
-
-        .btn-info {
-            background: #0ea5e9;
-            border: none;
-            border-radius: 10px;
-            padding: 0.5rem 1rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-info:hover {
-            background: #0284c7;
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: #ef4444;
-            border: none;
-            border-radius: 10px;
-            padding: 0.5rem 1rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
-            transform: translateY(-2px);
-        }
-
-        /* Table Styling */
-        .table-responsive {
-            border-radius: 0 0 20px 20px;
-            overflow: hidden;
-        }
-
-        .table {
-            margin-bottom: 0;
-        }
-
-        .table thead {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(249, 115, 22, 0.1) 100%);
-        }
-
-        .table th {
-            color: var(--primary-orange);
-            font-weight: 700;
-            border: none;
-            padding: 1.25rem;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-        }
-
-        .table td {
-            padding: 1.25rem;
-            border-color: var(--slate-200);
-            vertical-align: middle;
-            color: var(--secondary-dark);
-        }
-
-        .table tbody tr {
-            transition: all 0.2s ease;
-        }
-
-        .table tbody tr:hover {
-            background: rgba(245, 158, 11, 0.05);
-        }
-
-        /* Badge Styling */
-        .badge {
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .badge-pending {
-            background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
-            color: #854d0e;
-        }
-
-        .badge-confirmed {
-            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-            color: #166534;
-        }
-
-        .badge-cancelled {
-            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-            color: #991b1b;
-        }
-
-        /* Paket Item */
-        .paket-item {
-            background: rgba(255, 255, 255, 0.95);
-            border: 2px solid var(--slate-200);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .paket-item:hover {
-            border-color: var(--primary-orange);
-            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15);
-            transform: translateY(-3px);
-        }
-
-        .paket-item h5 {
-            color: var(--primary-orange);
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-            font-size: 1.5rem;
-        }
-
-        .paket-item .text-muted {
-            color: var(--slate-600) !important;
-        }
-
-        .paket-item .text-success {
-            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Modal Styling */
-        .modal-content {
-            border-radius: 20px;
-            border: none;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
-            color: white;
-            border-radius: 20px 20px 0 0;
-            border: none;
-            padding: 1.5rem;
-        }
-
-        .modal-title {
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .modal-body {
-            padding: 2rem;
-        }
-
-        .booking-detail-item {
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--slate-200);
-        }
-
-        .booking-detail-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .booking-detail-label {
-            font-weight: 600;
-            color: var(--slate-600);
-            margin-bottom: 0.25rem;
-            font-size: 0.9rem;
-        }
-
-        .booking-detail-value {
-            font-size: 1.1rem;
-            color: var(--secondary-dark);
-            font-weight: 500;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { 
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to { 
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .tab-content {
-            animation: fadeIn 0.5s ease;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: var(--slate-600);
-        }
-
-        .empty-state-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            color: var(--slate-300);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .navbar-brand {
-                font-size: 1.25rem;
-            }
-
-            .stats-card {
-                margin-bottom: 1rem;
-            }
-
-            .nav-tabs {
-                flex-direction: column;
-            }
-
-            .nav-link {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .paket-item .col-md-4 {
-                margin-top: 1rem;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
+      <div class="loading-spinner"></div>
     </div>
 
     <!-- Notification Container -->
@@ -624,372 +643,350 @@
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg sticky-top">
-        <div class="container-fluid">
-            <span class="navbar-brand">
-                <i class="bi bi-mountain"></i>
-                CampHub Admin
-            </span>
-            <div class="d-flex gap-2">
-                <a href="../index.html" class="btn btn-back">
-                    <i class="bi bi-house-door"></i> Home
-                </a>
-                <button onclick="logout()" class="btn btn-logout">
-                    <i class="bi bi-box-arrow-right"></i> Logout
-                </button>
-            </div>
+      <div class="container-fluid">
+        <span class="navbar-brand">
+          <i class="bi bi-mountain"></i>
+          CampHub Admin
+        </span>
+        <div class="d-flex gap-2">
+          <a href="../index.html" class="btn btn-back"> <i class="bi bi-house-door"></i> Home </a>
+          <button onclick="logout()" class="btn btn-logout"><i class="bi bi-box-arrow-right"></i> Logout</button>
         </div>
+      </div>
     </nav>
 
     <div class="container-main container-lg">
-        <!-- Stats Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card">
-                    <div class="stats-icon orange">
-                        <i class="bi bi-box-seam"></i>
-                    </div>
-                    <h6 class="text-muted mb-2">Total Paket</h6>
-                    <h2 class="mb-0 fw-bold" id="totalPaket">0</h2>
-                </div>
+      <!-- Stats Cards -->
+      <div class="row mb-4">
+        <div class="col-md-3 col-sm-6">
+          <div class="stats-card">
+            <div class="stats-icon orange">
+              <i class="bi bi-box-seam"></i>
             </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card">
-                    <div class="stats-icon blue">
-                        <i class="bi bi-cart-check"></i>
-                    </div>
-                    <h6 class="text-muted mb-2">Total Pesanan</h6>
-                    <h2 class="mb-0 fw-bold" id="totalPesanan">0</h2>
-                </div>
+            <h6 class="text-muted mb-2">Total Paket</h6>
+            <h2 class="mb-0 fw-bold" id="totalPaket">0</h2>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stats-card">
+            <div class="stats-icon blue">
+              <i class="bi bi-cart-check"></i>
             </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card">
-                    <div class="stats-icon green">
-                        <i class="bi bi-check-circle"></i>
-                    </div>
-                    <h6 class="text-muted mb-2">Confirmed</h6>
-                    <h2 class="mb-0 fw-bold" id="totalConfirmed">0</h2>
-                </div>
+            <h6 class="text-muted mb-2">Total Pesanan</h6>
+            <h2 class="mb-0 fw-bold" id="totalPesanan">0</h2>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stats-card">
+            <div class="stats-icon green">
+              <i class="bi bi-check-circle"></i>
             </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card">
-                    <div class="stats-icon purple">
-                        <i class="bi bi-clock-history"></i>
-                    </div>
-                    <h6 class="text-muted mb-2">Pending</h6>
-                    <h2 class="mb-0 fw-bold" id="totalPending">0</h2>
-                </div>
+            <h6 class="text-muted mb-2">Confirmed</h6>
+            <h2 class="mb-0 fw-bold" id="totalConfirmed">0</h2>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stats-card">
+            <div class="stats-icon purple">
+              <i class="bi bi-clock-history"></i>
             </div>
+            <h6 class="text-muted mb-2">Pending</h6>
+            <h2 class="mb-0 fw-bold" id="totalPending">0</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs Navigation -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#paket-tab"><i class="bi bi-box-seam"></i> Kelola Paket</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pesanan-tab"><i class="bi bi-cart-check"></i> Kelola Pesanan</button>
+        </li>
+      </ul>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Tab Paket -->
+        <div id="paket-tab" class="tab-pane fade show active">
+          <div class="card mb-4">
+            <div class="card-header"><i class="bi bi-plus-circle"></i> Tambah Paket Baru</div>
+            <div class="card-body p-4">
+              <form id="paketForm" novalidate>
+                <input type="hidden" id="editPaketId" />
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="namaPaket" class="form-label">Nama Paket <span class="text-danger">*</span></label>
+                    <input type="text" id="namaPaket" class="form-control" placeholder="Contoh: Glamping Premium" required />
+                    <div class="invalid-feedback">Nama paket wajib diisi</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="hargaPaket" class="form-label">Harga (Rp) <span class="text-danger">*</span></label>
+                    <input type="number" id="hargaPaket" class="form-control" placeholder="750000" min="1000" required />
+                    <div class="invalid-feedback">Harga minimal Rp 1.000</div>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="deskripsiPaket" class="form-label">Deskripsi <span class="text-danger">*</span></label>
+                  <textarea id="deskripsiPaket" class="form-control" rows="3" placeholder="Deskripsikan paket camping Anda..." required></textarea>
+                  <div class="invalid-feedback">Deskripsi paket wajib diisi</div>
+                </div>
+                <div class="mb-3">
+                  <label for="fasilitasPaket" class="form-label">Fasilitas (pisahkan dengan koma) <span class="text-danger">*</span></label>
+                  <input type="text" id="fasilitasPaket" class="form-control" placeholder="Tenda Premium, Kasur, Sleeping Bag, Makan 3x" required />
+                  <div class="invalid-feedback">Fasilitas wajib diisi</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="gambarPaket" class="form-label">URL Gambar <span class="text-danger">*</span></label>
+                    <input type="url" id="gambarPaket" class="form-control" placeholder="https://example.com/image.jpg" required />
+                    <div class="invalid-feedback">URL gambar tidak valid</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="badgePaket" class="form-label">Badge (Opsional)</label>
+                    <select id="badgePaket" class="form-select">
+                      <option value="">Pilih Badge</option>
+                      <option value="New">New</option>
+                      <option value="Popular">Popular</option>
+                      <option value="Best Seller">Best Seller</option>
+                      <option value="Promo">Promo</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Simpan Paket</button>
+                  <button type="button" id="resetForm" class="btn btn-secondary"><i class="bi bi-arrow-clockwise"></i> Reset Form</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><i class="bi bi-list-check"></i> Daftar Paket Camping</div>
+            <div class="card-body p-4">
+              <div id="paketList"></div>
+            </div>
+          </div>
         </div>
 
-        <!-- Tabs Navigation -->
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#paket-tab">
-                    <i class="bi bi-box-seam"></i> Kelola Paket
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pesanan-tab">
-                    <i class="bi bi-cart-check"></i> Kelola Pesanan
-                </button>
-            </li>
-        </ul>
-
-        <!-- Tab Content -->
-        <div class="tab-content">
-            <!-- Tab Paket -->
-            <div id="paket-tab" class="tab-pane fade show active">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <i class="bi bi-plus-circle"></i> Tambah Paket Baru
-                    </div>
-                    <div class="card-body p-4">
-                        <form id="paketForm" novalidate>
-                            <input type="hidden" id="editPaketId" />
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="namaPaket" class="form-label">Nama Paket <span class="text-danger">*</span></label>
-                                    <input type="text" id="namaPaket" class="form-control" placeholder="Contoh: Glamping Premium" required />
-                                    <div class="invalid-feedback">Nama paket wajib diisi</div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="hargaPaket" class="form-label">Harga (Rp) <span class="text-danger">*</span></label>
-                                    <input type="number" id="hargaPaket" class="form-control" placeholder="750000" min="1000" required />
-                                    <div class="invalid-feedback">Harga minimal Rp 1.000</div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="deskripsiPaket" class="form-label">Deskripsi <span class="text-danger">*</span></label>
-                                <textarea id="deskripsiPaket" class="form-control" rows="3" placeholder="Deskripsikan paket camping Anda..." required></textarea>
-                                <div class="invalid-feedback">Deskripsi paket wajib diisi</div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="fasilitasPaket" class="form-label">Fasilitas (pisahkan dengan koma) <span class="text-danger">*</span></label>
-                                <input type="text" id="fasilitasPaket" class="form-control" placeholder="Tenda Premium, Kasur, Sleeping Bag, Makan 3x" required />
-                                <div class="invalid-feedback">Fasilitas wajib diisi</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="gambarPaket" class="form-label">URL Gambar <span class="text-danger">*</span></label>
-                                    <input type="url" id="gambarPaket" class="form-control" placeholder="https://example.com/image.jpg" required />
-                                    <div class="invalid-feedback">URL gambar tidak valid</div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="badgePaket" class="form-label">Badge (Opsional)</label>
-                                    <select id="badgePaket" class="form-select">
-                                        <option value="">Pilih Badge</option>
-                                        <option value="New">New</option>
-                                        <option value="Popular">Popular</option>
-                                        <option value="Best Seller">Best Seller</option>
-                                        <option value="Promo">Promo</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-save"></i> Simpan Paket
-                                </button>
-                                <button type="button" id="resetForm" class="btn btn-secondary">
-                                    <i class="bi bi-arrow-clockwise"></i> Reset Form
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <i class="bi bi-list-check"></i> Daftar Paket Camping
-                    </div>
-                    <div class="card-body p-4">
-                        <div id="paketList"></div>
-                    </div>
-                </div>
+        <!-- Tab Pesanan -->
+        <div id="pesanan-tab" class="tab-pane fade">
+          <div class="card">
+            <div class="card-header"><i class="bi bi-cart-check"></i> Daftar Pesanan Pelanggan</div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Nama</th>
+                      <th>Email</th>
+                      <th>Paket</th>
+                      <th>Check-in</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pesananList"></tbody>
+                </table>
+              </div>
             </div>
-
-            <!-- Tab Pesanan -->
-            <div id="pesanan-tab" class="tab-pane fade">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="bi bi-cart-check"></i> Daftar Pesanan Pelanggan
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nama</th>
-                                        <th>Email</th>
-                                        <th>Paket</th>
-                                        <th>Check-in</th>
-                                        <th>Total</th>
-                                        <th>Status</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="pesananList"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- Modal Detail Pesanan -->
     <div class="modal fade" id="detailPesananModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="bi bi-info-circle"></i> Detail Pesanan
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="bi bi-info-circle"></i> Detail Pesanan</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="booking-detail-item">
+                  <div class="booking-detail-label">ID Pesanan</div>
+                  <div class="booking-detail-value" id="detailId">-</div>
                 </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="booking-detail-item">
-                                <div class="booking-detail-label">ID Pesanan</div>
-                                <div class="booking-detail-value" id="detailId">-</div>
-                            </div>
-                            <div class="booking-detail-item">
-                                <div class="booking-detail-label">Nama Lengkap</div>
-                                <div class="booking-detail-value" id="detailNama">-</div>
-                            </div>
-                            <div class="booking-detail-item">
-                                <div class="booking-detail-label">Email</div>
-                                <div class="booking-detail-value" id="detailEmail">-</div>
-                            </div>
-                            <div class="booking-detail-item">
-                                <div class="booking-detail-label">No. Telepon</div>
-                                <div class="booking-detail-value" id="detailPhone">-</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="booking-detail-item">
-                                <div class="booking-detail-label">Tanggal Check-in</div>
-                                <div class="booking-detail-value" id="detailCheckin">-</div>
-                            </div>
-                            <div class="booking-detail-item">
-                                <div class="booking-detail-label">Durasi</div>
-                                <div class="booking-detail-value" id="detailDurasi">-</div>
-                            </div>
-                            <div class="booking-detail-item">
-                                <div class="booking-detail-label">Paket</div>
-                                <div class="booking-detail-value" id="detailPaket">-</div>
-                            </div>
-                            <div class="booking-detail-item">
-                                <div class="booking-detail-label">Total Harga</div>
-                                <div class="booking-detail-value" id="detailTotal">-</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="booking-detail-item">
-                        <div class="booking-detail-label">Catatan Tambahan</div>
-                        <div class="booking-detail-value" id="detailCatatan">Tidak ada catatan</div>
-                    </div>
-                    <div class="booking-detail-item">
-                        <div class="booking-detail-label">Status</div>
-                        <div class="booking-detail-value">
-                            <span class="badge" id="detailStatus">-</span>
-                        </div>
-                    </div>
-                    <div class="booking-detail-item">
-                        <div class="booking-detail-label">Waktu Pemesanan</div>
-                        <div class="booking-detail-value" id="detailTimestamp">-</div>
-                    </div>
+                <div class="booking-detail-item">
+                  <div class="booking-detail-label">Nama Lengkap</div>
+                  <div class="booking-detail-value" id="detailNama">-</div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Tutup
-                    </button>
+                <div class="booking-detail-item">
+                  <div class="booking-detail-label">Email</div>
+                  <div class="booking-detail-value" id="detailEmail">-</div>
                 </div>
+                <div class="booking-detail-item">
+                  <div class="booking-detail-label">No. Telepon</div>
+                  <div class="booking-detail-value" id="detailPhone">-</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="booking-detail-item">
+                  <div class="booking-detail-label">Tanggal Check-in</div>
+                  <div class="booking-detail-value" id="detailCheckin">-</div>
+                </div>
+                <div class="booking-detail-item">
+                  <div class="booking-detail-label">Durasi</div>
+                  <div class="booking-detail-value" id="detailDurasi">-</div>
+                </div>
+                <div class="booking-detail-item">
+                  <div class="booking-detail-label">Paket</div>
+                  <div class="booking-detail-value" id="detailPaket">-</div>
+                </div>
+                <div class="booking-detail-item">
+                  <div class="booking-detail-label">Total Harga</div>
+                  <div class="booking-detail-value" id="detailTotal">-</div>
+                </div>
+              </div>
             </div>
+            <div class="booking-detail-item">
+              <div class="booking-detail-label">Catatan Tambahan</div>
+              <div class="booking-detail-value" id="detailCatatan">Tidak ada catatan</div>
+            </div>
+            <div class="booking-detail-item">
+              <div class="booking-detail-label">Status</div>
+              <div class="booking-detail-value">
+                <span class="badge" id="detailStatus">-</span>
+              </div>
+            </div>
+            <div class="booking-detail-item">
+              <div class="booking-detail-label">Waktu Pemesanan</div>
+              <div class="booking-detail-value" id="detailTimestamp">-</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Tutup</button>
+          </div>
         </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Check login status
-        function checkLoginStatus() {
-            const loginData = localStorage.getItem('adminLogin') || sessionStorage.getItem('adminLogin');
-            if (!loginData) {
-                window.location.href = '../login.html';
-                return false;
-            }
-            return true;
+      // Check login status
+      function checkLoginStatus() {
+        const loginData = localStorage.getItem("adminLogin") || sessionStorage.getItem("adminLogin");
+        if (!loginData) {
+          window.location.href = "../login.html";
+          return false;
         }
-        
-        // Check on page load
-        if (!checkLoginStatus()) {
-            throw new Error('Not authenticated');
-        }
+        return true;
+      }
 
-        // Notification System
-        class NotificationSystem {
-            static show(message, type = 'success') {
-                const container = document.getElementById('notificationContainer');
-                const notification = document.createElement('div');
-                notification.className = `alert alert-${type} alert-dismissible fade show notification ${type}`;
-                notification.innerHTML = `
+      // Check on page load
+      if (!checkLoginStatus()) {
+        throw new Error("Not authenticated");
+      }
+
+      // Notification System
+      class NotificationSystem {
+        static show(message, type = "success") {
+          const container = document.getElementById("notificationContainer");
+          const notification = document.createElement("div");
+          notification.className = `alert alert-${type} alert-dismissible fade show notification ${type}`;
+          notification.innerHTML = `
                     <div class="d-flex align-items-center gap-3">
                         <i class="bi ${this.getIcon(type)} fs-4"></i>
                         <div>${message}</div>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 `;
-                
-                container.appendChild(notification);
-                
-                // Auto remove after 5 seconds
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.remove();
-                    }
-                }, 5000);
-            }
 
-            static getIcon(type) {
-                const icons = {
-                    success: 'bi-check-circle-fill',
-                    warning: 'bi-exclamation-triangle-fill',
-                    error: 'bi-x-circle-fill',
-                    info: 'bi-info-circle-fill'
-                };
-                return icons[type] || 'bi-info-circle-fill';
+          container.appendChild(notification);
+
+          // Auto remove after 5 seconds
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.remove();
             }
+          }, 5000);
         }
 
-        // Loading Overlay
-        class LoadingOverlay {
-            static show() {
-                document.getElementById('loadingOverlay').classList.add('active');
-            }
+        static getIcon(type) {
+          const icons = {
+            success: "bi-check-circle-fill",
+            warning: "bi-exclamation-triangle-fill",
+            error: "bi-x-circle-fill",
+            info: "bi-info-circle-fill",
+          };
+          return icons[type] || "bi-info-circle-fill";
+        }
+      }
 
-            static hide() {
-                document.getElementById('loadingOverlay').classList.remove('active');
-            }
+      // Loading Overlay
+      class LoadingOverlay {
+        static show() {
+          document.getElementById("loadingOverlay").classList.add("active");
         }
 
-        // Form Validation
-        class FormValidator {
-            static validateForm(form) {
-                let isValid = true;
-                const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
-                
-                inputs.forEach(input => {
-                    if (!input.value.trim()) {
-                        input.classList.add('is-invalid');
-                        isValid = false;
-                    } else {
-                        input.classList.remove('is-invalid');
-                        
-                        // Additional validation
-                        if (input.type === 'number' && input.hasAttribute('min')) {
-                            const min = parseInt(input.getAttribute('min'));
-                            if (parseInt(input.value) < min) {
-                                input.classList.add('is-invalid');
-                                isValid = false;
-                            }
-                        }
-                        
-                        if (input.type === 'url' && input.value) {
-                            try {
-                                new URL(input.value);
-                            } catch (e) {
-                                input.classList.add('is-invalid');
-                                isValid = false;
-                            }
-                        }
-                    }
-                });
+        static hide() {
+          document.getElementById("loadingOverlay").classList.remove("active");
+        }
+      }
 
-                return isValid;
+      // Form Validation
+      class FormValidator {
+        static validateForm(form) {
+          let isValid = true;
+          const inputs = form.querySelectorAll("input[required], textarea[required], select[required]");
+
+          inputs.forEach((input) => {
+            if (!input.value.trim()) {
+              input.classList.add("is-invalid");
+              isValid = false;
+            } else {
+              input.classList.remove("is-invalid");
+
+              // Additional validation
+              if (input.type === "number" && input.hasAttribute("min")) {
+                const min = parseInt(input.getAttribute("min"));
+                if (parseInt(input.value) < min) {
+                  input.classList.add("is-invalid");
+                  isValid = false;
+                }
+              }
+
+              if (input.type === "url" && input.value) {
+                try {
+                  new URL(input.value);
+                } catch (e) {
+                  input.classList.add("is-invalid");
+                  isValid = false;
+                }
+              }
             }
+          });
+
+          return isValid;
         }
+      }
 
-        // Update Stats
-        function updateStats() {
-            const pakets = JSON.parse(localStorage.getItem('pakets')) || [];
-            const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-            
-            document.getElementById('totalPaket').textContent = pakets.length;
-            document.getElementById('totalPesanan').textContent = bookings.length;
-            document.getElementById('totalConfirmed').textContent = bookings.filter(b => b.status === 'confirmed').length;
-            document.getElementById('totalPending').textContent = bookings.filter(b => b.status === 'pending').length;
-        }
+      // Update Stats
+      function updateStats() {
+        const pakets = JSON.parse(localStorage.getItem("pakets")) || [];
+        const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
 
-        // Load Paket
-        function loadPaket() {
-            LoadingOverlay.show();
-            setTimeout(() => {
-                const pakets = JSON.parse(localStorage.getItem('pakets')) || [];
-                const container = document.getElementById('paketList');
+        document.getElementById("totalPaket").textContent = pakets.length;
+        document.getElementById("totalPesanan").textContent = bookings.length;
+        document.getElementById("totalConfirmed").textContent = bookings.filter((b) => b.status === "confirmed").length;
+        document.getElementById("totalPending").textContent = bookings.filter((b) => b.status === "pending").length;
+      }
 
-                if (pakets.length === 0) {
-                    container.innerHTML = `
+      // Load Paket
+      function loadPaket() {
+        LoadingOverlay.show();
+        setTimeout(() => {
+          const pakets = JSON.parse(localStorage.getItem("pakets")) || [];
+          const container = document.getElementById("paketList");
+
+          if (pakets.length === 0) {
+            container.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">
                                 <i class="bi bi-box"></i>
@@ -998,17 +995,19 @@
                             <p class="text-muted">Tambahkan paket camping pertama Anda menggunakan form di atas</p>
                         </div>
                     `;
-                    LoadingOverlay.hide();
-                    return;
-                }
+            LoadingOverlay.hide();
+            return;
+          }
 
-                container.innerHTML = pakets.map((paket) => `
+          container.innerHTML = pakets
+            .map(
+              (paket) => `
                     <div class="paket-item">
                         <div class="row align-items-start">
                             <div class="col-md-2 mb-3 mb-md-0">
                                 <img src="${paket.gambar}" alt="${paket.nama}" 
                                      class="img-fluid rounded" style="max-height: 120px; object-fit: cover; width: 100%;">
-                                ${paket.badge ? `<span class="badge bg-warning mt-2">${paket.badge}</span>` : ''}
+                                ${paket.badge ? `<span class="badge bg-warning mt-2">${paket.badge}</span>` : ""}
                             </div>
                             <div class="col-md-6">
                                 <h5>${paket.nama}</h5>
@@ -1016,12 +1015,16 @@
                                 <div class="mb-3">
                                     <strong class="text-secondary">Fasilitas:</strong>
                                     <div class="mt-2">
-                                        ${paket.fasilitas.map(f => `<span class="badge bg-light text-dark border me-2 mb-2">
+                                        ${paket.fasilitas
+                                          .map(
+                                            (f) => `<span class="badge bg-light text-dark border me-2 mb-2">
                                             <i class="bi bi-check"></i> ${f}
-                                        </span>`).join('')}
+                                        </span>`
+                                          )
+                                          .join("")}
                                     </div>
                                 </div>
-                                <h4 class="fw-bold text-success mb-0">Rp ${paket.harga.toLocaleString('id-ID')}</h4>
+                                <h4 class="fw-bold text-success mb-0">Rp ${paket.harga.toLocaleString("id-ID")}</h4>
                             </div>
                             <div class="col-md-4 text-md-end mt-3 mt-md-0">
                                 <div class="d-flex flex-md-column flex-row gap-2 justify-content-md-end">
@@ -1035,134 +1038,184 @@
                             </div>
                         </div>
                     </div>
-                `).join('');
-                
-                updateStats();
-                LoadingOverlay.hide();
-            }, 500);
+                `
+            )
+            .join("");
+
+          updateStats();
+          LoadingOverlay.hide();
+        }, 500);
+      }
+
+      // Save Paket
+      document.getElementById("paketForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        if (!FormValidator.validateForm(e.target)) {
+          NotificationSystem.show("Harap lengkapi semua field yang wajib diisi", "warning");
+          return;
         }
 
-        // Save Paket
-        document.getElementById('paketForm').addEventListener('submit', (e) => {
-            e.preventDefault();
+        LoadingOverlay.show();
+        setTimeout(() => {
+          const pakets = JSON.parse(localStorage.getItem("pakets")) || [];
+          const editId = document.getElementById("editPaketId").value;
 
-            if (!FormValidator.validateForm(e.target)) {
-                NotificationSystem.show('Harap lengkapi semua field yang wajib diisi', 'warning');
-                return;
-            }
+          const paket = {
+            id: editId ? parseInt(editId) : Date.now(),
+            nama: document.getElementById("namaPaket").value,
+            harga: parseInt(document.getElementById("hargaPaket").value),
+            deskripsi: document.getElementById("deskripsiPaket").value,
+            fasilitas: document
+              .getElementById("fasilitasPaket")
+              .value.split(",")
+              .map((f) => f.trim()),
+            gambar: document.getElementById("gambarPaket").value,
+            badge: document.getElementById("badgePaket").value || "",
+            createdAt: editId ? pakets.find((p) => p.id === parseInt(editId)).createdAt : new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
 
-            LoadingOverlay.show();
-            setTimeout(() => {
-                const pakets = JSON.parse(localStorage.getItem('pakets')) || [];
-                const editId = document.getElementById('editPaketId').value;
+          let successMessage = "";
+          if (editId) {
+            const index = pakets.findIndex((p) => p.id === parseInt(editId));
+            pakets[index] = paket;
+            successMessage = "Paket berhasil diperbarui!";
+          } else {
+            pakets.push(paket);
+            successMessage = "Paket berhasil ditambahkan!";
+          }
 
-                const paket = {
-                    id: editId ? parseInt(editId) : Date.now(),
-                    nama: document.getElementById('namaPaket').value,
-                    harga: parseInt(document.getElementById('hargaPaket').value),
-                    deskripsi: document.getElementById('deskripsiPaket').value,
-                    fasilitas: document.getElementById('fasilitasPaket').value.split(',').map(f => f.trim()),
-                    gambar: document.getElementById('gambarPaket').value,
-                    badge: document.getElementById('badgePaket').value || '',
-                    createdAt: editId ? pakets.find(p => p.id === parseInt(editId)).createdAt : new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
-                };
+          localStorage.setItem("pakets", JSON.stringify(pakets));
 
-                if (editId) {
-                    const index = pakets.findIndex(p => p.id === parseInt(editId));
-                    pakets[index] = paket;
-                    NotificationSystem.show('Paket berhasil diperbarui!', 'success');
-                } else {
-                    pakets.push(paket);
-                    NotificationSystem.show('Paket berhasil ditambahkan!', 'success');
-                }
+          // Reset form dan mode edit
+          document.getElementById("paketForm").reset();
+          document.getElementById("editPaketId").value = "";
+          document.getElementById("badgePaket").value = "";
 
-                localStorage.setItem('pakets', JSON.stringify(pakets));
-                
-                // Reset form
-                document.getElementById('paketForm').reset();
-                document.getElementById('editPaketId').value = '';
-                document.getElementById('badgePaket').value = '';
-                
-                // Remove validation classes
-                const inputs = e.target.querySelectorAll('.form-control, .form-select');
-                inputs.forEach(input => input.classList.remove('is-invalid'));
-                
-                loadPaket();
-                
-                // Update paket data di halaman index
-                updateIndexPaketData();
-            }, 1000);
-        });
+          // Kembalikan tombol ke mode tambah
+          const submitBtn = e.target.querySelector('button[type="submit"]');
+          submitBtn.innerHTML = '<i class="bi bi-save"></i> Simpan Paket';
 
-        // Edit Paket
-        function editPaket(id) {
-            const pakets = JSON.parse(localStorage.getItem('pakets')) || [];
-            const paket = pakets.find(p => p.id === id);
+          // Ubah judul card header jika dalam mode edit
+          const cardHeader = document.querySelector(".card-header i.bi-plus-circle").parentElement;
+          cardHeader.innerHTML = '<i class="bi bi-plus-circle"></i> Tambah Paket Baru';
 
-            document.getElementById('editPaketId').value = paket.id;
-            document.getElementById('namaPaket').value = paket.nama;
-            document.getElementById('hargaPaket').value = paket.harga;
-            document.getElementById('deskripsiPaket').value = paket.deskripsi;
-            document.getElementById('fasilitasPaket').value = paket.fasilitas.join(', ');
-            document.getElementById('gambarPaket').value = paket.gambar;
-            document.getElementById('badgePaket').value = paket.badge || '';
+          // Remove validation classes
+          const inputs = e.target.querySelectorAll(".form-control, .form-select");
+          inputs.forEach((input) => input.classList.remove("is-invalid"));
 
-            // Switch to paket tab and scroll to form
-            document.querySelector('[data-bs-target="#paket-tab"]').click();
-            window.scrollTo({ top: 200, behavior: 'smooth' });
-            
-            // Focus on first field
-            document.getElementById('namaPaket').focus();
-            
-            NotificationSystem.show('Siap mengedit paket: ' + paket.nama, 'info');
+          loadPaket();
+          NotificationSystem.show(successMessage, "success");
+
+          // Update paket data di halaman index
+          updateIndexPaketData();
+        }, 1000);
+      });
+
+      // Edit Paket - tambahkan class edit-mode
+      function editPaket(id) {
+        const pakets = JSON.parse(localStorage.getItem("pakets")) || [];
+        const paket = pakets.find((p) => p.id === id);
+
+        document.getElementById("editPaketId").value = paket.id;
+        document.getElementById("namaPaket").value = paket.nama;
+        document.getElementById("hargaPaket").value = paket.harga;
+        document.getElementById("deskripsiPaket").value = paket.deskripsi;
+        document.getElementById("fasilitasPaket").value = paket.fasilitas.join(", ");
+        document.getElementById("gambarPaket").value = paket.gambar;
+        document.getElementById("badgePaket").value = paket.badge || "";
+
+        // Ubah tombol submit ke mode edit
+        const submitBtn = document.querySelector('#paketForm button[type="submit"]');
+        submitBtn.innerHTML = '<i class="bi bi-pencil-square"></i> Update Paket';
+
+        // Ubah judul card header
+        const cardHeader = document.querySelector(".card-header i.bi-plus-circle").parentElement;
+        cardHeader.innerHTML = '<i class="bi bi-pencil-square"></i> Edit Paket';
+
+        // Tambah class edit-mode ke card
+        const card = document.querySelector("#paket-tab .card:first-child");
+        card.classList.add("edit-mode");
+
+        // Switch to paket tab and scroll to form
+        document.querySelector('[data-bs-target="#paket-tab"]').click();
+        window.scrollTo({ top: 200, behavior: "smooth" });
+
+        // Focus on first field
+        document.getElementById("namaPaket").focus();
+
+        NotificationSystem.show(`Mengedit paket: ${paket.nama}`, "info");
+      }
+
+      // Dalam fungsi resetForm dan setelah submit berhasil, hapus class edit-mode
+      function resetFormAndMode() {
+        document.getElementById("paketForm").reset();
+        document.getElementById("editPaketId").value = "";
+        document.getElementById("badgePaket").value = "";
+
+        // Kembalikan tombol ke mode tambah
+        const submitBtn = document.querySelector('#paketForm button[type="submit"]');
+        submitBtn.innerHTML = '<i class="bi bi-save"></i> Simpan Paket';
+
+        // Kembalikan judul card header
+        const cardHeader = document.querySelector(".card-header i.bi-pencil-square, .card-header i.bi-plus-circle").parentElement;
+        cardHeader.innerHTML = '<i class="bi bi-plus-circle"></i> Tambah Paket Baru';
+
+        // Hapus class edit-mode dari card
+        const card = document.querySelector("#paket-tab .card:first-child");
+        card.classList.remove("edit-mode");
+
+        // Remove validation classes
+        const inputs = document.querySelectorAll(".form-control, .form-select");
+        inputs.forEach((input) => input.classList.remove("is-invalid"));
+      }
+
+      // Delete Paket
+      function deletePaket(id) {
+        if (!confirm("⚠️ Yakin ingin menghapus paket ini? Tindakan ini tidak dapat dibatalkan.")) {
+          return;
         }
 
-        // Delete Paket
-        function deletePaket(id) {
-            if (!confirm('⚠️ Yakin ingin menghapus paket ini? Tindakan ini tidak dapat dibatalkan.')) {
-                return;
-            }
+        LoadingOverlay.show();
+        setTimeout(() => {
+          let pakets = JSON.parse(localStorage.getItem("pakets")) || [];
+          const paketName = pakets.find((p) => p.id === id)?.nama;
 
-            LoadingOverlay.show();
-            setTimeout(() => {
-                let pakets = JSON.parse(localStorage.getItem('pakets')) || [];
-                const paketName = pakets.find(p => p.id === id)?.nama;
-                
-                pakets = pakets.filter(p => p.id !== id);
-                localStorage.setItem('pakets', JSON.stringify(pakets));
-                
-                // Update paket data di halaman index
-                updateIndexPaketData();
-                
-                loadPaket();
-                NotificationSystem.show(`Paket "${paketName}" berhasil dihapus`, 'success');
-            }, 1000);
-        }
+          pakets = pakets.filter((p) => p.id !== id);
+          localStorage.setItem("pakets", JSON.stringify(pakets));
 
-        // Reset Form
-        document.getElementById('resetForm').addEventListener('click', () => {
-            document.getElementById('paketForm').reset();
-            document.getElementById('editPaketId').value = '';
-            document.getElementById('badgePaket').value = '';
-            
-            // Remove validation classes
-            const inputs = document.querySelectorAll('.form-control, .form-select');
-            inputs.forEach(input => input.classList.remove('is-invalid'));
-            
-            NotificationSystem.show('Form telah direset', 'info');
-        });
+          // Update paket data di halaman index
+          updateIndexPaketData();
 
-        // Load Pesanan
-        function loadPesanan() {
-            LoadingOverlay.show();
-            setTimeout(() => {
-                const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-                const pakets = JSON.parse(localStorage.getItem('pakets')) || [];
-                const container = document.getElementById('pesananList');
+          loadPaket();
+          NotificationSystem.show(`Paket "${paketName}" berhasil dihapus`, "success");
+        }, 1000);
+      }
 
-                if (bookings.length === 0) {
-                    container.innerHTML = `
+      // Reset Form
+      document.getElementById("resetForm").addEventListener("click", () => {
+        document.getElementById("paketForm").reset();
+        document.getElementById("editPaketId").value = "";
+        document.getElementById("badgePaket").value = "";
+
+        // Remove validation classes
+        const inputs = document.querySelectorAll(".form-control, .form-select");
+        inputs.forEach((input) => input.classList.remove("is-invalid"));
+
+        NotificationSystem.show("Form telah direset", "info");
+      });
+
+      // Load Pesanan
+      function loadPesanan() {
+        LoadingOverlay.show();
+        setTimeout(() => {
+          const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+          const pakets = JSON.parse(localStorage.getItem("pakets")) || [];
+          const container = document.getElementById("pesananList");
+
+          if (bookings.length === 0) {
+            container.innerHTML = `
                         <tr>
                             <td colspan="8" class="text-center py-5">
                                 <div class="empty-state-icon">
@@ -1173,34 +1226,33 @@
                             </td>
                         </tr>
                     `;
-                    LoadingOverlay.hide();
-                    return;
-                }
+            LoadingOverlay.hide();
+            return;
+          }
 
-                // Sort by date (newest first)
-                bookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          // Sort by date (newest first)
+          bookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-                container.innerHTML = bookings.map((booking) => {
-                    const paket = pakets.find(p => p.id == booking.paketId);
-                    const statusClass = booking.status === 'confirmed' ? 'badge-confirmed' : 
-                                      booking.status === 'cancelled' ? 'badge-cancelled' : 'badge-pending';
-                    const statusText = booking.status === 'confirmed' ? 'Confirmed' : 
-                                     booking.status === 'cancelled' ? 'Cancelled' : 'Pending';
-                    const totalHarga = paket ? paket.harga * booking.jumlahHari : 0;
-                    
-                    return `
+          container.innerHTML = bookings
+            .map((booking) => {
+              const paket = pakets.find((p) => p.id == booking.paketId);
+              const statusClass = booking.status === "confirmed" ? "badge-confirmed" : booking.status === "cancelled" ? "badge-cancelled" : "badge-pending";
+              const statusText = booking.status === "confirmed" ? "Confirmed" : booking.status === "cancelled" ? "Cancelled" : "Pending";
+              const totalHarga = paket ? paket.harga * booking.jumlahHari : 0;
+
+              return `
                         <tr>
                             <td><strong>#${booking.id.toString().slice(-6)}</strong></td>
                             <td><strong>${booking.nama}</strong></td>
                             <td class="text-muted">${booking.email}</td>
-                            <td>${paket ? paket.nama : 'Paket dihapus'}</td>
-                            <td>${new Date(booking.checkin).toLocaleDateString('id-ID', {
-                                weekday: 'short',
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric'
+                            <td>${paket ? paket.nama : "Paket dihapus"}</td>
+                            <td>${new Date(booking.checkin).toLocaleDateString("id-ID", {
+                              weekday: "short",
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
                             })}</td>
-                            <td><strong>Rp ${totalHarga.toLocaleString('id-ID')}</strong></td>
+                            <td><strong>Rp ${totalHarga.toLocaleString("id-ID")}</strong></td>
                             <td><span class="badge ${statusClass}">${statusText}</span></td>
                             <td>
                                 <div class="d-flex gap-2">
@@ -1209,136 +1261,135 @@
                                     </button>
                                     <select onchange="updateStatus(${booking.id}, this.value)" 
                                             class="form-select form-select-sm" style="width: auto; min-width: 130px;">
-                                        <option value="pending" ${booking.status === 'pending' ? 'selected' : ''}>Pending</option>
-                                        <option value="confirmed" ${booking.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
-                                        <option value="cancelled" ${booking.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                                        <option value="pending" ${booking.status === "pending" ? "selected" : ""}>Pending</option>
+                                        <option value="confirmed" ${booking.status === "confirmed" ? "selected" : ""}>Confirmed</option>
+                                        <option value="cancelled" ${booking.status === "cancelled" ? "selected" : ""}>Cancelled</option>
                                     </select>
                                 </div>
                             </td>
                         </tr>
                     `;
-                }).join('');
-                
-                updateStats();
-                LoadingOverlay.hide();
-            }, 500);
+            })
+            .join("");
+
+          updateStats();
+          LoadingOverlay.hide();
+        }, 500);
+      }
+
+      // Show Detail Pesanan
+      function showDetail(id) {
+        const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+        const pakets = JSON.parse(localStorage.getItem("pakets")) || [];
+        const booking = bookings.find((b) => b.id === id);
+
+        if (!booking) {
+          NotificationSystem.show("Pesanan tidak ditemukan", "error");
+          return;
         }
 
-        // Show Detail Pesanan
-        function showDetail(id) {
-            const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-            const pakets = JSON.parse(localStorage.getItem('pakets')) || [];
-            const booking = bookings.find(b => b.id === id);
-            
-            if (!booking) {
-                NotificationSystem.show('Pesanan tidak ditemukan', 'error');
-                return;
-            }
+        const paket = pakets.find((p) => p.id == booking.paketId);
+        const totalHarga = paket ? paket.harga * booking.jumlahHari : 0;
+        const statusClass = booking.status === "confirmed" ? "badge-confirmed" : booking.status === "cancelled" ? "badge-cancelled" : "badge-pending";
+        const statusText = booking.status === "confirmed" ? "Confirmed" : booking.status === "cancelled" ? "Cancelled" : "Pending";
 
-            const paket = pakets.find(p => p.id == booking.paketId);
-            const totalHarga = paket ? paket.harga * booking.jumlahHari : 0;
-            const statusClass = booking.status === 'confirmed' ? 'badge-confirmed' : 
-                              booking.status === 'cancelled' ? 'badge-cancelled' : 'badge-pending';
-            const statusText = booking.status === 'confirmed' ? 'Confirmed' : 
-                             booking.status === 'cancelled' ? 'Cancelled' : 'Pending';
-
-            // Populate modal
-            document.getElementById('detailId').textContent = '#' + booking.id.toString().slice(-6);
-            document.getElementById('detailNama').textContent = booking.nama;
-            document.getElementById('detailEmail').textContent = booking.email;
-            document.getElementById('detailPhone').textContent = booking.phone || '-';
-            document.getElementById('detailCheckin').textContent = new Date(booking.checkin).toLocaleDateString('id-ID', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            document.getElementById('detailDurasi').textContent = booking.jumlahHari + ' hari';
-            document.getElementById('detailPaket').textContent = paket ? paket.nama : 'Paket dihapus';
-            document.getElementById('detailTotal').textContent = 'Rp ' + totalHarga.toLocaleString('id-ID');
-            document.getElementById('detailCatatan').textContent = booking.catatan || 'Tidak ada catatan';
-            document.getElementById('detailTimestamp').textContent = new Date(booking.createdAt).toLocaleString('id-ID');
-            
-            const statusBadge = document.getElementById('detailStatus');
-            statusBadge.textContent = statusText;
-            statusBadge.className = `badge ${statusClass}`;
-
-            // Show modal
-            const modal = new bootstrap.Modal(document.getElementById('detailPesananModal'));
-            modal.show();
-        }
-
-        // Update Status
-        function updateStatus(id, status) {
-            LoadingOverlay.show();
-            setTimeout(() => {
-                let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-                const index = bookings.findIndex(b => b.id === id);
-                bookings[index].status = status;
-                bookings[index].updatedAt = new Date().toISOString();
-                localStorage.setItem('bookings', JSON.stringify(bookings));
-                
-                // Update status di halaman index jika ada
-                updateIndexBookingData();
-                
-                loadPesanan();
-                NotificationSystem.show(`Status pesanan berhasil diubah menjadi ${status}`, 'success');
-            }, 500);
-        }
-
-        // Update data di halaman index (untuk sinkronisasi)
-        function updateIndexPaketData() {
-            // Data sudah diupdate di localStorage, jadi halaman index akan otomatis membaca
-            console.log('Paket data updated in localStorage');
-        }
-
-        function updateIndexBookingData() {
-            // Data sudah diupdate di localStorage, jadi halaman index akan otomatis membaca
-            console.log('Booking data updated in localStorage');
-        }
-
-        // Logout function
-        function logout() {
-            if (confirm('⚠️ Yakin ingin keluar dari dashboard admin?')) {
-                LoadingOverlay.show();
-                setTimeout(() => {
-                    localStorage.removeItem('adminLogin');
-                    sessionStorage.removeItem('adminLogin');
-                    window.location.href = '../login.html';
-                }, 1000);
-            }
-        }
-
-        // Initialize form validation on input
-        document.querySelectorAll('#paketForm input, #paketForm textarea, #paketForm select').forEach(input => {
-            input.addEventListener('input', function() {
-                if (this.value.trim()) {
-                    this.classList.remove('is-invalid');
-                }
-            });
+        // Populate modal
+        document.getElementById("detailId").textContent = "#" + booking.id.toString().slice(-6);
+        document.getElementById("detailNama").textContent = booking.nama;
+        document.getElementById("detailEmail").textContent = booking.email;
+        document.getElementById("detailPhone").textContent = booking.phone || "-";
+        document.getElementById("detailCheckin").textContent = new Date(booking.checkin).toLocaleDateString("id-ID", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
         });
+        document.getElementById("detailDurasi").textContent = booking.jumlahHari + " hari";
+        document.getElementById("detailPaket").textContent = paket ? paket.nama : "Paket dihapus";
+        document.getElementById("detailTotal").textContent = "Rp " + totalHarga.toLocaleString("id-ID");
+        document.getElementById("detailCatatan").textContent = booking.catatan || "Tidak ada catatan";
+        document.getElementById("detailTimestamp").textContent = new Date(booking.createdAt).toLocaleString("id-ID");
 
-        // Initialize
-        window.addEventListener('DOMContentLoaded', () => {
-            loadPaket();
-            loadPesanan();
-            updateStats();
-            
-            // Show welcome notification
-            setTimeout(() => {
-                NotificationSystem.show('Selamat datang di Dashboard Admin CampHub!', 'info');
-            }, 1000);
+        const statusBadge = document.getElementById("detailStatus");
+        statusBadge.textContent = statusText;
+        statusBadge.className = `badge ${statusClass}`;
+
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById("detailPesananModal"));
+        modal.show();
+      }
+
+      // Update Status
+      function updateStatus(id, status) {
+        LoadingOverlay.show();
+        setTimeout(() => {
+          let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+          const index = bookings.findIndex((b) => b.id === id);
+          bookings[index].status = status;
+          bookings[index].updatedAt = new Date().toISOString();
+          localStorage.setItem("bookings", JSON.stringify(bookings));
+
+          // Update status di halaman index jika ada
+          updateIndexBookingData();
+
+          loadPesanan();
+          NotificationSystem.show(`Status pesanan berhasil diubah menjadi ${status}`, "success");
+        }, 500);
+      }
+
+      // Update data di halaman index (untuk sinkronisasi)
+      function updateIndexPaketData() {
+        // Data sudah diupdate di localStorage, jadi halaman index akan otomatis membaca
+        console.log("Paket data updated in localStorage");
+      }
+
+      function updateIndexBookingData() {
+        // Data sudah diupdate di localStorage, jadi halaman index akan otomatis membaca
+        console.log("Booking data updated in localStorage");
+      }
+
+      // Logout function
+      function logout() {
+        if (confirm("⚠️ Yakin ingin keluar dari dashboard admin?")) {
+          LoadingOverlay.show();
+          setTimeout(() => {
+            localStorage.removeItem("adminLogin");
+            sessionStorage.removeItem("adminLogin");
+            window.location.href = "../login.html";
+          }, 1000);
+        }
+      }
+
+      // Initialize form validation on input
+      document.querySelectorAll("#paketForm input, #paketForm textarea, #paketForm select").forEach((input) => {
+        input.addEventListener("input", function () {
+          if (this.value.trim()) {
+            this.classList.remove("is-invalid");
+          }
         });
+      });
 
-        // Auto refresh stats every 30 seconds
-        setInterval(() => {
-            updateStats();
-        }, 30000);
+      // Initialize
+      window.addEventListener("DOMContentLoaded", () => {
+        loadPaket();
+        loadPesanan();
+        updateStats();
 
-        // Simulate real-time updates (optional)
-        setInterval(() => {
-            loadPesanan();
-        }, 60000); // Refresh pesanan setiap 1 menit
+        // Show welcome notification
+        setTimeout(() => {
+          NotificationSystem.show("Selamat datang di Dashboard Admin CampHub!", "info");
+        }, 1000);
+      });
+
+      // Auto refresh stats every 30 seconds
+      setInterval(() => {
+        updateStats();
+      }, 30000);
+
+      // Simulate real-time updates (optional)
+      setInterval(() => {
+        loadPesanan();
+      }, 60000); // Refresh pesanan setiap 1 menit
     </script>
-</body>
+  </body>
 </html>
